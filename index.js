@@ -7,7 +7,17 @@ function main() {
   if (!gl) { console.log("WebGL unavailable"); return; }
 
   /*========== Define and Store the Geometry ==========*/
-  // TODO: cube positions (36 vertices), then your assigned solid
+  // Front face of the cube: two triangles.
+  const positions = [
+    -0.75, -0.25, -0.5,
+    -0.25, -0.25, -0.5,
+    -0.25,  0.25, -0.5,
+
+    -0.75, -0.25, -0.5,
+    -0.25,  0.25, -0.5,
+    -0.75,  0.25, -0.5
+  ];
+  // TODO: add the other five cube faces, then the assigned solid
   // TODO: colours, 4 values per vertex (console.assert the length)
   // TODO: const buffers = initBuffers(gl, positions, colors);
 
