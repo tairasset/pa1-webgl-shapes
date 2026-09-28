@@ -17,9 +17,9 @@ function main() {
     -0.25,  0.25, -0.5,
     -0.75,  0.25, -0.5
   ];
-  // TODO: add the other five cube faces, then the assigned solid
   // TODO: colours, 4 values per vertex (console.assert the length)
-  // TODO: const buffers = initBuffers(gl, positions, colors);
+  const buffers = initBuffers(gl, positions);
+  if (!buffers) return;
 
   /*========== Shaders ==========*/
   const vsSource = `
@@ -55,6 +55,10 @@ function createProgram(gl, vertexShader, fragmentShader) {
   // TODO: attach, link, check LINK_STATUS, useProgram, return program
 }
 
-function initBuffers(gl, positions, colors) {
-  // TODO: one position buffer, one colour buffer; return both
+function initBuffers(gl, positions) {
+  const position = gl.createBuffer();
+  if (!position) return null;
+  gl.bindBuffer(gl.ARRAY_BUFFER, position);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+  return { position };
 }
