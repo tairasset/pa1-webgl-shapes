@@ -15,7 +15,16 @@ function main() {
 
     -0.75, -0.25, -0.5,
     -0.25,  0.25, -0.5,
-    -0.75,  0.25, -0.5
+    -0.75,  0.25, -0.5,
+
+    // Back face: shifted 0.15 left and 0.15 up.
+    -0.90, -0.10,  0.5,
+    -0.40, -0.10,  0.5,
+    -0.40,  0.40,  0.5,
+
+    -0.90, -0.10,  0.5,
+    -0.40,  0.40,  0.5,
+    -0.90,  0.40,  0.5
   ];
   // TODO: colours, 4 values per vertex (console.assert the length)
   const buffers = initBuffers(gl, positions);
