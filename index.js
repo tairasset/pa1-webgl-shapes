@@ -26,23 +26,32 @@ function main() {
     -0.40,  0.40,  0.5,
     -0.90,  0.40,  0.5
   ];
-  // TODO: colours, 4 values per vertex (console.assert the length)
-  const buffers = initBuffers(gl, positions);
+  const frontColor = [0.95, 0.45, 0.25, 1.0];
+  const backColor = [0.25, 0.55, 0.90, 1.0];
+  const colors = [];
+  for (let i = 0; i < 6; i++) colors.push(...frontColor);
+  for (let i = 0; i < 6; i++) colors.push(...backColor);
+  console.assert(colors.length === (positions.length / 3) * 4);
+  const buffers = initBuffers(gl, positions, colors);
   if (!buffers) return;
 
   /*========== Shaders ==========*/
   const vsSource = `
     attribute vec4 aPosition;
+    attribute vec4 aVertexColor;
+    varying lowp vec4 vColor;
 
     void main() {
       gl_Position = aPosition;
+      vColor = aVertexColor;
     }
   `;
   const fsSource = `
     precision mediump float;
+    varying lowp vec4 vColor;
 
     void main() {
-      gl_FragColor = vec4(0.95, 0.45, 0.25, 1.0);
+      gl_FragColor = vColor;
     }
   `;
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
@@ -57,6 +66,11 @@ function main() {
   gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
   gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(positionLocation);
+
+  const colorLocation = gl.getAttribLocation(program, "aVertexColor");
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+  gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(colorLocation);
 
   /*========== Drawing ==========*/
   const state = { mode: gl.TRIANGLES, depth: true, cubeFirst: true };
@@ -104,10 +118,14 @@ function createProgram(gl, vertexShader, fragmentShader) {
   return program;
 }
 
-function initBuffers(gl, positions) {
+function initBuffers(gl, positions, colors) {
   const position = gl.createBuffer();
-  if (!position) return null;
+  const color = gl.createBuffer();
+  if (!position || !color) return null;
   gl.bindBuffer(gl.ARRAY_BUFFER, position);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  return { position };
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, color);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+  return { position, color };
 }
