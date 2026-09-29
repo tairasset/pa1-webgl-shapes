@@ -24,13 +24,24 @@ function main() {
 
     -0.90, -0.10,  0.5,
     -0.40,  0.40,  0.5,
+    -0.90,  0.40,  0.5,
+
+    // Top face: connects the front and back top edges.
+    -0.75,  0.25, -0.5,
+    -0.25,  0.25, -0.5,
+    -0.40,  0.40,  0.5,
+
+    -0.75,  0.25, -0.5,
+    -0.40,  0.40,  0.5,
     -0.90,  0.40,  0.5
   ];
   const frontColor = [0.95, 0.45, 0.25, 1.0];
   const backColor = [0.25, 0.55, 0.90, 1.0];
+  const topColor = [0.95, 0.75, 0.30, 1.0];
   const colors = [];
   for (let i = 0; i < 6; i++) colors.push(...frontColor);
   for (let i = 0; i < 6; i++) colors.push(...backColor);
+  for (let i = 0; i < 6; i++) colors.push(...topColor);
   console.assert(colors.length === (positions.length / 3) * 4);
   const buffers = initBuffers(gl, positions, colors);
   if (!buffers) return;
