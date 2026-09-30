@@ -136,7 +136,10 @@ function main() {
   const bottomColor = [0.40, 0.60, 0.35, 1.0];
   const frustumBaseColor = [0.20, 0.50, 0.55, 1.0];
   const frustumTopColor = [0.45, 0.80, 0.50, 1.0];
-  const frustumFrontColor = [0.87, 0.48, 0.28, 1.0];
+  const frustumFrontBottomLeft = [0.55, 0.22, 0.30, 1.0];
+  const frustumFrontBottomRight = [0.85, 0.34, 0.24, 1.0];
+  const frustumFrontTopRight = [0.885, 0.585, 0.365, 1.0];
+  const frustumFrontTopLeft = [0.735, 0.525, 0.395, 1.0];
   const frustumLeftColor = [0.55, 0.45, 0.85, 1.0];
   const frustumBackColor = [0.30, 0.45, 0.80, 1.0];
   const frustumRightColor = [0.82, 0.68, 0.30, 1.0];
@@ -152,7 +155,10 @@ function main() {
   for (let i = 0; i < 6; i++) colors.push(...bottomColor);
   for (let i = 0; i < 6; i++) colors.push(...frustumBaseColor);
   for (let i = 0; i < 6; i++) colors.push(...frustumTopColor);
-  for (let i = 0; i < 6; i++) colors.push(...frustumFrontColor);
+  for (const color of [
+    frustumFrontBottomLeft, frustumFrontBottomRight, frustumFrontTopRight,
+    frustumFrontBottomLeft, frustumFrontTopRight, frustumFrontTopLeft
+  ]) colors.push(...color);
   for (let i = 0; i < 6; i++) colors.push(...frustumLeftColor);
   for (let i = 0; i < 6; i++) colors.push(...frustumBackColor);
   for (let i = 0; i < 6; i++) colors.push(...frustumRightColor);
