@@ -62,6 +62,33 @@ function main() {
     -0.40, -0.10,  0.5,
     -0.90, -0.10,  0.5
   ];
+  const cubeCount = positions.length / 3;
+  const frustum = [
+    // Large square base on the floor.
+    0.20, -0.30, -0.50,
+    0.80, -0.30, -0.50,
+    0.80, -0.30,  0.10,
+
+    0.20, -0.30, -0.50,
+    0.80, -0.30,  0.10,
+    0.20, -0.30,  0.10,
+
+    // Smaller square top.
+    0.35,  0.25, -0.35,
+    0.65,  0.25, -0.35,
+    0.65,  0.25, -0.05,
+
+    0.35,  0.25, -0.35,
+    0.65,  0.25, -0.05,
+    0.35,  0.25, -0.05
+  ];
+  for (let i = 0; i < frustum.length; i += 3) {
+    const x = frustum[i];
+    const y = frustum[i + 1];
+    const z = frustum[i + 2];
+    positions.push(x - 0.15 * (z + 0.5), y + 0.15 * (z + 0.5), z);
+  }
+  const frustumCount = frustum.length / 3;
   const frontColor = [0.95, 0.45, 0.25, 1.0];
   const backColor = [0.25, 0.55, 0.90, 1.0];
   const topColor = [0.95, 0.75, 0.30, 1.0];
@@ -71,6 +98,8 @@ function main() {
   const leftFrontTop = [0.56, 0.47, 0.77, 1.0];
   const rightColor = [0.35, 0.75, 0.70, 1.0];
   const bottomColor = [0.40, 0.60, 0.35, 1.0];
+  const frustumBaseColor = [0.20, 0.50, 0.55, 1.0];
+  const frustumTopColor = [0.45, 0.80, 0.50, 1.0];
   const colors = [];
   for (let i = 0; i < 6; i++) colors.push(...frontColor);
   for (let i = 0; i < 6; i++) colors.push(...backColor);
@@ -81,6 +110,8 @@ function main() {
   ]) colors.push(...color);
   for (let i = 0; i < 6; i++) colors.push(...rightColor);
   for (let i = 0; i < 6; i++) colors.push(...bottomColor);
+  for (let i = 0; i < 6; i++) colors.push(...frustumBaseColor);
+  for (let i = 0; i < 6; i++) colors.push(...frustumTopColor);
   console.assert(colors.length === (positions.length / 3) * 4);
   const buffers = initBuffers(gl, positions, colors);
   if (!buffers) return;
@@ -132,7 +163,8 @@ function main() {
     else gl.disable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.drawArrays(state.mode, 0, positions.length / 3);
+    gl.drawArrays(state.mode, 0, cubeCount);
+    gl.drawArrays(state.mode, cubeCount, frustumCount);
     document.querySelector("#status").textContent = "242458 | TRIANGLES | depth ON";
   }
 
