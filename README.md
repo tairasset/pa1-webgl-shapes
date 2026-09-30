@@ -1,30 +1,32 @@
-# PA1 — 3D Shapes in WebGL
+# PA1 - 3D Shapes in WebGL
 
-Student ID: **242458**
+Tair Asset, AIB-2401
 
-The last digit (8) assigns a square frustum. The second-to-last digit (5) gives an up-left depth offset of **(-0.15, +0.15)**. The page draws a cube on the left and the frustum on the right using WebGL 1.0.
+Student ID: 242458
+
+The scene has a cube on the left and a square frustum on the right. My ID ends in 58, so the back vertices move 0.15 left and 0.15 up. That is why the top and left sides are visible. Each solid has one face with a colour gradient.
 
 ## Run
 
-From this folder, start a local server:
+Start a local server in this folder:
 
 ```text
 python -m http.server 8765
 ```
 
-Then open `http://localhost:8765/` in Chrome or Firefox. VS Code Live Server is another option. Opening `index.html` directly as a file is not the intended test method.
+Then open `http://localhost:8765/`. If you use VS Code, Live Server works too.
 
 ## Keys
 
 | Key | Action |
 | --- | --- |
-| 1 | TRIANGLES (default) |
-| 2 | LINE_LOOP |
-| 3 | LINES |
-| 4 | LINE_STRIP |
-| 5 | POINTS |
-| 6 | TRIANGLE_STRIP |
-| D | Toggle depth testing |
-| S | Swap drawing order of the cube and frustum |
+| 1 | TRIANGLES — filled faces (default) |
+| 2 | LINE_LOOP — connected lines |
+| 3 | LINES — separate line segments |
+| 4 | LINE_STRIP — connected lines without closing the loop |
+| 5 | POINTS — show the vertices |
+| 6 | TRIANGLE_STRIP — triangles joined in a strip |
+| D | Turn the depth test on or off |
+| S | Draw the frustum before the cube, or the cube before the frustum |
 
-The label at the top left shows the student ID, drawing mode, depth setting, and drawing order. No external libraries are needed.
+The small label in the top-left corner shows what is currently selected.
