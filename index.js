@@ -98,7 +98,25 @@ function main() {
 
     0.20, -0.30, -0.50,
     0.35,  0.25, -0.05,
-    0.20, -0.30,  0.10
+    0.20, -0.30,  0.10,
+
+    // Back trapezoid.
+    0.80, -0.30,  0.10,
+    0.20, -0.30,  0.10,
+    0.35,  0.25, -0.05,
+
+    0.80, -0.30,  0.10,
+    0.35,  0.25, -0.05,
+    0.65,  0.25, -0.05,
+
+    // Right trapezoid.
+    0.80, -0.30, -0.50,
+    0.80, -0.30,  0.10,
+    0.65,  0.25, -0.05,
+
+    0.80, -0.30, -0.50,
+    0.65,  0.25, -0.05,
+    0.65,  0.25, -0.35
   ];
   for (let i = 0; i < frustum.length; i += 3) {
     const x = frustum[i];
@@ -120,6 +138,8 @@ function main() {
   const frustumTopColor = [0.45, 0.80, 0.50, 1.0];
   const frustumFrontColor = [0.87, 0.48, 0.28, 1.0];
   const frustumLeftColor = [0.55, 0.45, 0.85, 1.0];
+  const frustumBackColor = [0.30, 0.45, 0.80, 1.0];
+  const frustumRightColor = [0.82, 0.68, 0.30, 1.0];
   const colors = [];
   for (let i = 0; i < 6; i++) colors.push(...frontColor);
   for (let i = 0; i < 6; i++) colors.push(...backColor);
@@ -134,6 +154,8 @@ function main() {
   for (let i = 0; i < 6; i++) colors.push(...frustumTopColor);
   for (let i = 0; i < 6; i++) colors.push(...frustumFrontColor);
   for (let i = 0; i < 6; i++) colors.push(...frustumLeftColor);
+  for (let i = 0; i < 6; i++) colors.push(...frustumBackColor);
+  for (let i = 0; i < 6; i++) colors.push(...frustumRightColor);
   console.assert(colors.length === (positions.length / 3) * 4);
   const buffers = initBuffers(gl, positions, colors);
   if (!buffers) return;
