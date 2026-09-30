@@ -42,17 +42,39 @@ function main() {
 
     -0.75, -0.25, -0.5,
     -0.90,  0.40,  0.5,
-    -0.75,  0.25, -0.5
+    -0.75,  0.25, -0.5,
+
+    // Right face: connects the front and back right edges.
+    -0.25, -0.25, -0.5,
+    -0.40, -0.10,  0.5,
+    -0.40,  0.40,  0.5,
+
+    -0.25, -0.25, -0.5,
+    -0.40,  0.40,  0.5,
+    -0.25,  0.25, -0.5,
+
+    // Bottom face: connects the front and back bottom edges.
+    -0.75, -0.25, -0.5,
+    -0.25, -0.25, -0.5,
+    -0.40, -0.10,  0.5,
+
+    -0.75, -0.25, -0.5,
+    -0.40, -0.10,  0.5,
+    -0.90, -0.10,  0.5
   ];
   const frontColor = [0.95, 0.45, 0.25, 1.0];
   const backColor = [0.25, 0.55, 0.90, 1.0];
   const topColor = [0.95, 0.75, 0.30, 1.0];
   const leftColor = [0.55, 0.45, 0.80, 1.0];
+  const rightColor = [0.35, 0.75, 0.70, 1.0];
+  const bottomColor = [0.40, 0.60, 0.35, 1.0];
   const colors = [];
   for (let i = 0; i < 6; i++) colors.push(...frontColor);
   for (let i = 0; i < 6; i++) colors.push(...backColor);
   for (let i = 0; i < 6; i++) colors.push(...topColor);
   for (let i = 0; i < 6; i++) colors.push(...leftColor);
+  for (let i = 0; i < 6; i++) colors.push(...rightColor);
+  for (let i = 0; i < 6; i++) colors.push(...bottomColor);
   console.assert(colors.length === (positions.length / 3) * 4);
   const buffers = initBuffers(gl, positions, colors);
   if (!buffers) return;
