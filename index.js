@@ -174,6 +174,7 @@ function main() {
 
     void main() {
       gl_Position = aPosition;
+      gl_PointSize = 6.0;
       vColor = aVertexColor;
     }
   `;
@@ -204,7 +205,15 @@ function main() {
   gl.enableVertexAttribArray(colorLocation);
 
   /*========== Drawing ==========*/
-  const state = { mode: gl.TRIANGLES, depth: true, cubeFirst: true };
+  const modes = {
+    "1": { value: gl.TRIANGLES, name: "TRIANGLES" },
+    "2": { value: gl.LINE_LOOP, name: "LINE_LOOP" },
+    "3": { value: gl.LINES, name: "LINES" },
+    "4": { value: gl.LINE_STRIP, name: "LINE_STRIP" },
+    "5": { value: gl.POINTS, name: "POINTS" },
+    "6": { value: gl.TRIANGLE_STRIP, name: "TRIANGLE_STRIP" }
+  };
+  const state = { mode: gl.TRIANGLES, modeName: "TRIANGLES", depth: true, cubeFirst: true };
 
   function render() {
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -213,13 +222,32 @@ function main() {
     else gl.disable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.drawArrays(state.mode, 0, cubeCount);
-    gl.drawArrays(state.mode, cubeCount, frustumCount);
-    document.querySelector("#status").textContent = "242458 | TRIANGLES | depth ON";
+    if (state.cubeFirst) {
+      gl.drawArrays(state.mode, 0, cubeCount);
+      gl.drawArrays(state.mode, cubeCount, frustumCount);
+    } else {
+      gl.drawArrays(state.mode, cubeCount, frustumCount);
+      gl.drawArrays(state.mode, 0, cubeCount);
+    }
+    const depthText = state.depth ? "ON" : "OFF";
+    const orderText = state.cubeFirst ? "cube first" : "frustum first";
+    document.querySelector("#status").textContent =
+      `242458 | ${state.modeName} | depth ${depthText} | ${orderText}`;
   }
 
   document.addEventListener("keydown", (event) => {
-    // TODO: keys 1-6, D, S -> update state, then render()
+    const key = event.key.toLowerCase();
+    if (modes[key]) {
+      state.mode = modes[key].value;
+      state.modeName = modes[key].name;
+    } else if (key === "d") {
+      state.depth = !state.depth;
+    } else if (key === "s") {
+      state.cubeFirst = !state.cubeFirst;
+    } else {
+      return;
+    }
+    render();
   });
 
   render();
