@@ -65,14 +65,20 @@ function main() {
   const frontColor = [0.95, 0.45, 0.25, 1.0];
   const backColor = [0.25, 0.55, 0.90, 1.0];
   const topColor = [0.95, 0.75, 0.30, 1.0];
-  const leftColor = [0.55, 0.45, 0.80, 1.0];
+  const leftFrontBottom = [0.34, 0.25, 0.65, 1.0];
+  const leftBackBottom = [0.48, 0.40, 0.78, 1.0];
+  const leftBackTop = [0.70, 0.62, 0.90, 1.0];
+  const leftFrontTop = [0.56, 0.47, 0.77, 1.0];
   const rightColor = [0.35, 0.75, 0.70, 1.0];
   const bottomColor = [0.40, 0.60, 0.35, 1.0];
   const colors = [];
   for (let i = 0; i < 6; i++) colors.push(...frontColor);
   for (let i = 0; i < 6; i++) colors.push(...backColor);
   for (let i = 0; i < 6; i++) colors.push(...topColor);
-  for (let i = 0; i < 6; i++) colors.push(...leftColor);
+  for (const color of [
+    leftFrontBottom, leftBackBottom, leftBackTop,
+    leftFrontBottom, leftBackTop, leftFrontTop
+  ]) colors.push(...color);
   for (let i = 0; i < 6; i++) colors.push(...rightColor);
   for (let i = 0; i < 6; i++) colors.push(...bottomColor);
   console.assert(colors.length === (positions.length / 3) * 4);
