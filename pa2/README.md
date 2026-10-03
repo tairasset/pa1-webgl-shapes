@@ -21,14 +21,18 @@ From the repository root, run `python -m http.server 8765`.
 Open `http://localhost:8765/pa2/` in Chrome or Firefox.
 Internet is required to load glMatrix 2.8.1 from cdnjs.
 
-## Progress — stage 1 (approximately 10%)
+## Progress — stage 2 (approximately 20%)
 
-- Full-window canvas and student ID in the title/status.
-- glMatrix 2.8.1 loaded before index.js.
-- WebGL context, depth testing, DPR-aware drawing buffer and viewport.
-- Aspect recalculated on resize.
+- Stage 1: full-window canvas, glMatrix 2.8.1 and DPR-correct resize.
+- Cube remodelled to -0.5..+0.5, without the PA1 depth offset.
+- PA1 square frustum centred and uniformly fitted inside a 1-unit box.
+- PA1 face colours and gradients retained.
+- Both shapes stored in one shared position buffer, with separate vertex counts.
+- Vertex/fragment shaders compiled and linked with error checks.
+- Position/colour attributes and three matrix uniform locations set up once.
 
-This stage intentionally shows a cleared canvas only. Geometry, shaders,
-matrices, animation and controls follow in later stages.
-The final package also needs real E1–E6 evidence, writeup.pdf, a demo video,
-and at least five meaningful commits across two real calendar days.
+The shaders use the required projection × view × model × position expression.
+Drawing and matrices will follow in the next stage, so this stage intentionally
+shows only the clear colour and a geometry-ready label.
+Animation, controls, experiment evidence, PDF and demo remain later stages.
+At least five meaningful PA2 commits across two real calendar days are required.
