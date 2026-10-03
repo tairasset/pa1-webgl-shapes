@@ -158,17 +158,33 @@ function main() {
   gl.depthFunc(gl.LEQUAL);
   gl.clearColor(0.12, 0.12, 0.14, 1);
 
-  // Geometry, shaders and attribute setup are complete.
-  // Model/view/projection matrices and draw calls follow in the next stage.
+  const view = mat4.create();
+  const projection = mat4.create();
+  const cubeModel = mat4.create();
+  const solidModel = mat4.create();
+  mat4.lookAt(view, [0, 2.5, 7], [0, 0, 0], [0, 1, 0]);
+  // Starting pose for ID 242458: vertical orbit begins above the cube.
+  mat4.translate(solidModel, solidModel, [0, 2.5, 0]);
+  mat4.scale(solidModel, solidModel, [0.65, 0.65, 0.65]);
+  gl.uniformMatrix4fv(uView, false, view);
+
+  function draw() {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.uniformMatrix4fv(uModel, false, cubeModel);
+    gl.drawArrays(gl.TRIANGLES, 0, cubeCount);
+    gl.uniformMatrix4fv(uModel, false, solidModel);
+    gl.drawArrays(gl.TRIANGLES, cubeCount, frustumCount);
+  }
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
     canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
     const aspect = canvas.width / canvas.height;
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    status.textContent = '242458 | Geometry ready: ' + cubeCount + ' cube + ' +
-      frustumCount + ' frustum vertices | aspect ' + aspect.toFixed(3);
+    mat4.perspective(projection, 45 * Math.PI / 180, aspect, 0.1, 20);
+    gl.uniformMatrix4fv(uProjection, false, projection);
+    draw();
+    status.textContent = '242458 | Perspective | FOV 45° | t 0.0 s | Static preview';
   }
   window.addEventListener('resize', resize);
   resize();

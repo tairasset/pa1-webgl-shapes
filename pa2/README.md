@@ -21,18 +21,18 @@ From the repository root, run `python -m http.server 8765`.
 Open `http://localhost:8765/pa2/` in Chrome or Firefox.
 Internet is required to load glMatrix 2.8.1 from cdnjs.
 
-## Progress — stage 2 (approximately 20%)
+## Progress — stage 3 (approximately 30%)
 
-- Stage 1: full-window canvas, glMatrix 2.8.1 and DPR-correct resize.
-- Cube remodelled to -0.5..+0.5, without the PA1 depth offset.
-- PA1 square frustum centred and uniformly fitted inside a 1-unit box.
-- PA1 face colours and gradients retained.
-- Both shapes stored in one shared position buffer, with separate vertex counts.
-- Vertex/fragment shaders compiled and linked with error checks.
-- Position/colour attributes and three matrix uniform locations set up once.
+Stages 1–2 provide the full-window canvas, variant geometry, buffers and shaders.
+Stage 3 adds a static perspective scene:
 
-The shaders use the required projection × view × model × position expression.
-Drawing and matrices will follow in the next stage, so this stage intentionally
-shows only the clear colour and a geometry-ready label.
-Animation, controls, experiment evidence, PDF and demo remain later stages.
+- Separate model, view and projection matrices.
+- Variant camera: eye (0,2.5,7), target (0,0,0), up (0,1,0).
+- Perspective FOV 45 degrees, near 0.1, far 20.
+- Cube at the origin and frustum at its initial orbit position (0,2.5,0).
+- Frustum initial scale 0.65; both shapes drawn separately with drawArrays.
+- Projection aspect and scene updated on resize, with depth testing enabled.
+
+This is a static starting pose. Animation, orthographic mode, controls,
+experiment evidence, PDF and video will follow in later stages.
 At least five meaningful PA2 commits across two real calendar days are required.
