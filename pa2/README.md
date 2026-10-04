@@ -35,13 +35,26 @@ Internet is required to load glMatrix 2.8.1 from cdnjs.
 FOV is limited to 20–100 degrees. Orthographic half-height is
 camera-target distance × tan(FOV/2); horizontal bounds include aspect ratio.
 
-## Progress — stage 5 (approximately 50%)
+## Progress — stage 6 (approximately 60%)
 
-Stages 1–4 provide geometry, shaders, camera and variant animation.
-Stage 5 adds all keyboard controls and orthographic projection.
-While paused, frame timestamps still update, so resuming does not include paused time.
-The status label displays ID, projection, FOV, time and pause state.
+The WebGL scene now includes geometry, model transformations, perspective and
+orthographic projections, animation, keyboard controls and the FPS display.
 
-FPS display and final verification remain for the next stage.
-Experiment evidence E1–E6, writeup.pdf and the demo video remain later work.
-At least five meaningful PA2 commits across two real calendar days are required.
+The label shows student ID, projection, FOV, simulated time and FPS.
+FPS uses actual timestamp intervals over each measurement window of at least
+one second, independently of simulated time and the dt clamp. Pausing freezes
+the scene time, while rendering and FPS measurement continue.
+
+## Verification
+
+- DPR-aware resize and projection aspect.
+- dt clamp, pause/resume, reset, FOV limits and projection controls.
+- Camera rotation preserves its height and distance from the target.
+- Numerical sampling over 42 seconds verifies orbit radius/plane and near/far safety.
+- Near 0.1 / far 20 contain the sampled view-space vertex depths, approximately 4.63–10.23.
+- Browser interaction checks: rendering and controls, with no console errors.
+
+The independent Chrome/Firefox check and E1–E6 experiments are still pending.
+writeup.pdf and the demo video are not yet produced. This is not a complete
+submission ZIP. At least five meaningful commits across two real calendar days
+are required; the current PA2 history already meets that minimum.

@@ -213,11 +213,18 @@ function main() {
   const baseEye = vec3.fromValues(...CAMERA_EYE);
   const cameraRotation = mat4.create();
   let then = null;
+  let fpsStart = null;
+  let frames = 0;
+  let fps = 0;
   function render(nowMs) {
     const now = nowMs * 0.001;
     const dt = then === null ? 0 : Math.min(now - then, 0.1);
     then = now;
     if (!state.paused) state.t += dt;
+    // Count frame intervals, excluding the first timestamp (no interval yet).
+    if (fpsStart === null) fpsStart = now;
+    else frames++;
+    if (now - fpsStart >= 1) { fps = frames / (now - fpsStart); frames = 0; fpsStart = now; }
     mat4.identity(cameraRotation);
     mat4.rotate(cameraRotation, cameraRotation, state.azimuth, [0,1,0]);
     vec3.transformMat4(eye, baseEye, cameraRotation);
@@ -235,7 +242,7 @@ function main() {
     gl.uniformMatrix4fv(uModel, false, solidModelMatrix(state.t));
     gl.drawArrays(gl.TRIANGLES, cubeCount, frustumCount);
     status.textContent = STUDENT_ID + " | " + (state.ortho ? "Orthographic" : "Perspective") +
-      " | FOV " + state.fovDeg + "° | t " + state.t.toFixed(1) + " s" + (state.paused ? " | PAUSED" : "");
+      " | FOV " + state.fovDeg + "° | t " + state.t.toFixed(1) + " s | " + fps.toFixed(1) + " FPS" + (state.paused ? " | PAUSED" : "");
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
