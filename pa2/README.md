@@ -21,18 +21,22 @@ From the repository root, run `python -m http.server 8765`.
 Open `http://localhost:8765/pa2/` in Chrome or Firefox.
 Internet is required to load glMatrix 2.8.1 from cdnjs.
 
-## Progress — stage 3 (approximately 30%)
+## Progress — stage 4 (approximately 40%)
 
-Stages 1–2 provide the full-window canvas, variant geometry, buffers and shaders.
-Stage 3 adds a static perspective scene:
+Stages 1–3 provide variant geometry, shaders and a perspective camera.
+Stage 4 animates both shapes using simulated time and glMatrix:
 
-- Separate model, view and projection matrices.
-- Variant camera: eye (0,2.5,7), target (0,0,0), up (0,1,0).
-- Perspective FOV 45 degrees, near 0.1, far 20.
-- Cube at the origin and frustum at its initial orbit position (0,2.5,0).
-- Frustum initial scale 0.65; both shapes drawn separately with drawArrays.
-- Projection aspect and scene updated on resize, with depth testing enabled.
+- Cube stays at the origin and rotates at 1.2 rad/s about normalised (1,1,1).
+- Frustum orbits at radius 2.5 in the yz plane, around x, with period 14 seconds.
+- Frustum spins about its own y-axis at 2 rad/s.
+- Uniform scale pulses as 0.65 + 0.15 sin(2πt/3).
+- Separate cubeModelMatrix(t) and solidModelMatrix(t) functions.
+- requestAnimationFrame drives the loop; timestamps converted to seconds.
+- dt limited to 0.1 seconds; the first frame starts at t=0.
 
-This is a static starting pose. Animation, orthographic mode, controls,
-experiment evidence, PDF and video will follow in later stages.
+Solid matrix order: Rx(2πt/14) · T(0,2.5,0) · Ry(2t) · S(s(t)).
+glMatrix right-multiplies; scale acts on the vertex first.
+
+Pause, orthographic projection, FOV/camera controls, FPS display,
+experiment evidence, PDF and video remain later stages.
 At least five meaningful PA2 commits across two real calendar days are required.
