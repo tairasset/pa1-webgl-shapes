@@ -21,22 +21,27 @@ From the repository root, run `python -m http.server 8765`.
 Open `http://localhost:8765/pa2/` in Chrome or Firefox.
 Internet is required to load glMatrix 2.8.1 from cdnjs.
 
-## Progress — stage 4 (approximately 40%)
+## Controls
 
-Stages 1–3 provide variant geometry, shaders and a perspective camera.
-Stage 4 animates both shapes using simulated time and glMatrix:
+| Key | Action |
+| --- | --- |
+| P | Pause/resume at the same pose |
+| O | Toggle perspective/orthographic |
+| + or = | Increase FOV by 5 degrees, perspective only |
+| - | Decrease FOV by 5 degrees, perspective only |
+| Left / Right | Rotate camera around y by 5 degrees |
+| R | Reset time, camera, FOV, projection and pause state |
 
-- Cube stays at the origin and rotates at 1.2 rad/s about normalised (1,1,1).
-- Frustum orbits at radius 2.5 in the yz plane, around x, with period 14 seconds.
-- Frustum spins about its own y-axis at 2 rad/s.
-- Uniform scale pulses as 0.65 + 0.15 sin(2πt/3).
-- Separate cubeModelMatrix(t) and solidModelMatrix(t) functions.
-- requestAnimationFrame drives the loop; timestamps converted to seconds.
-- dt limited to 0.1 seconds; the first frame starts at t=0.
+FOV is limited to 20–100 degrees. Orthographic half-height is
+camera-target distance × tan(FOV/2); horizontal bounds include aspect ratio.
 
-Solid matrix order: Rx(2πt/14) · T(0,2.5,0) · Ry(2t) · S(s(t)).
-glMatrix right-multiplies; scale acts on the vertex first.
+## Progress — stage 5 (approximately 50%)
 
-Pause, orthographic projection, FOV/camera controls, FPS display,
-experiment evidence, PDF and video remain later stages.
+Stages 1–4 provide geometry, shaders, camera and variant animation.
+Stage 5 adds all keyboard controls and orthographic projection.
+While paused, frame timestamps still update, so resuming does not include paused time.
+The status label displays ID, projection, FOV, time and pause state.
+
+FPS display and final verification remain for the next stage.
+Experiment evidence E1–E6, writeup.pdf and the demo video remain later work.
 At least five meaningful PA2 commits across two real calendar days are required.

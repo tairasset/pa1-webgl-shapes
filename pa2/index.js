@@ -182,38 +182,62 @@ function main() {
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
   gl.clearColor(0.12, 0.12, 0.14, 1);
-
-  const view = mat4.create();
-  const projection = mat4.create();
-  mat4.lookAt(view, [0, 2.5, 7], [0, 0, 0], [0, 1, 0]);
-  gl.uniformMatrix4fv(uView, false, view);
-  let t = 0;
-  let then = null;
-  function render(nowMs) {
-    const now = nowMs * 0.001;
-    const dt = then === null ? 0 : Math.min(now - then, 0.1);
-    then = now;
-    t += dt;
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.uniformMatrix4fv(uModel, false, cubeModelMatrix(t));
-    gl.drawArrays(gl.TRIANGLES, 0, cubeCount);
-    gl.uniformMatrix4fv(uModel, false, solidModelMatrix(t));
-    gl.drawArrays(gl.TRIANGLES, cubeCount, frustumCount);
-    status.textContent = '242458 | Perspective | FOV 45° | t ' + t.toFixed(1) + ' s';
-    requestAnimationFrame(render);
-  }
+  const state = {t:0, paused:false, ortho:false, fovDeg:INITIAL_FOV, azimuth:0};
+  let aspect = 1;
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
     canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
-    const aspect = canvas.width / canvas.height;
-    mat4.perspective(projection, 45 * Math.PI / 180, aspect, 0.1, 20);
-    gl.uniformMatrix4fv(uProjection, false, projection);
-
+    aspect = canvas.width / canvas.height;
   }
-  window.addEventListener('resize', resize);
+  window.addEventListener("resize", resize);
   resize();
+  document.addEventListener("keydown", event => {
+    const key = event.key.toLowerCase();
+    if (key === "p") state.paused = !state.paused;
+    else if (key === "o") state.ortho = !state.ortho;
+    else if (key === "+" || key === "=") { if (!state.ortho) state.fovDeg = Math.min(100, state.fovDeg + 5); }
+    else if (key === "-") { if (!state.ortho) state.fovDeg = Math.max(20, state.fovDeg - 5); }
+    else if (key === "arrowleft") state.azimuth -= 5 * Math.PI / 180;
+    else if (key === "arrowright") state.azimuth += 5 * Math.PI / 180;
+    else if (key === "r") Object.assign(state, {t:0, paused:false, ortho:false, fovDeg:INITIAL_FOV, azimuth:0});
+    else return;
+    event.preventDefault();
+  });
+  const view = mat4.create();
+  const projection = mat4.create();
+  const eye = vec3.create();
+  const origin = vec3.fromValues(0,0,0);
+  const up = vec3.fromValues(0,1,0);
+  const baseEye = vec3.fromValues(...CAMERA_EYE);
+  const cameraRotation = mat4.create();
+  let then = null;
+  function render(nowMs) {
+    const now = nowMs * 0.001;
+    const dt = then === null ? 0 : Math.min(now - then, 0.1);
+    then = now;
+    if (!state.paused) state.t += dt;
+    mat4.identity(cameraRotation);
+    mat4.rotate(cameraRotation, cameraRotation, state.azimuth, [0,1,0]);
+    vec3.transformMat4(eye, baseEye, cameraRotation);
+    mat4.lookAt(view, eye, origin, up);
+    const fov = state.fovDeg * Math.PI / 180;
+    if (state.ortho) {
+      const halfHeight = vec3.length(baseEye) * Math.tan(fov / 2);
+      mat4.ortho(projection, -halfHeight * aspect, halfHeight * aspect, -halfHeight, halfHeight, NEAR, FAR);
+    } else mat4.perspective(projection, fov, aspect, NEAR, FAR);
+    gl.uniformMatrix4fv(uView, false, view);
+    gl.uniformMatrix4fv(uProjection, false, projection);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.uniformMatrix4fv(uModel, false, cubeModelMatrix(state.t));
+    gl.drawArrays(gl.TRIANGLES, 0, cubeCount);
+    gl.uniformMatrix4fv(uModel, false, solidModelMatrix(state.t));
+    gl.drawArrays(gl.TRIANGLES, cubeCount, frustumCount);
+    status.textContent = STUDENT_ID + " | " + (state.ortho ? "Orthographic" : "Perspective") +
+      " | FOV " + state.fovDeg + "° | t " + state.t.toFixed(1) + " s" + (state.paused ? " | PAUSED" : "");
+    requestAnimationFrame(render);
+  }
   requestAnimationFrame(render);
 }
 
