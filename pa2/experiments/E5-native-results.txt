@@ -1,0 +1,10 @@
+Transcribed from the visible native Edge result panel and console screenshots.
+CPU setting evidence: timing-cpu4.png, DevTools Performance CPU 4x slowdown.
+dt five seconds: wallSeconds=5.000002; count=291; mean=0.017182137457044673; max=0.04999999999999999.
+one orbit: wallSeconds=14.000202000000002; simulatedSeconds=14.000202000000002; period=14; frameTolerance=0.016600000000000392.
+The later long suspension shown in the CPU screenshots occurred after these measurements and is excluded.
+CPU restored to No throttling before the unclamped tab test.
+Timed tab-return evidence: timing-unclamped-return5.png and timing-unclamped-console.png.
+visibility return: hiddenSeconds=5.126300000071524; tBeforeNextFrame=88.6986.
+long frame: rawDt=5.133400000000009; usedDt=5.133400000000009; t=93.83200000000001.
+No errors are visible in the final native console screenshot.

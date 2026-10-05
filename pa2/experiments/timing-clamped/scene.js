@@ -219,12 +219,12 @@ function main() {
   let fps = 0;
 
   const evidencePanel=document.createElement('pre');
-  evidencePanel.style.cssText='position:fixed;bottom:45px;left:12px;background:#000d;color:white;padding:10px;white-space:pre-wrap;font:12px monospace;max-width:90vw';
+  evidencePanel.style.cssText='position:fixed;bottom:45px;left:12px;background:#000d;color:white;padding:10px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px monospace;max-width:90vw';
   document.body.appendChild(evidencePanel);
   const records=[];
   function report(label,data){const line=label+' '+JSON.stringify(data);records.push(line);console.log(line);evidencePanel.textContent=records.join('\n');}
 
-  let run=null;
+  let run={start:null,samples:[],fiveDone:false,orbitDone:false};
   let hiddenAt=null;
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden) hiddenAt=performance.now()/1000;
@@ -246,7 +246,7 @@ function main() {
     }}
     if(!run.orbitDone && state.t>=ORBIT_PERIOD){report('one orbit',{wallSeconds:now-run.start,simulatedSeconds:state.t,period:ORBIT_PERIOD,frameTolerance:raw});run.orbitDone=true;}
   }
-  report('instructions',{key:'B starts a 5-second dt sample and a 14-second orbit measurement'});
+  report('instructions',{key:'Measurement starts on load; B restarts the 5-second dt sample and 14-second orbit'});
 
   function render(nowMs) {
     const now = nowMs * 0.001;
