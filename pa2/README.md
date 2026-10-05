@@ -35,7 +35,7 @@ Internet is required to load glMatrix 2.8.1 from cdnjs.
 FOV is limited to 20–100 degrees. Orthographic half-height is
 camera-target distance × tan(FOV/2); horizontal bounds include aspect ratio.
 
-## Progress — stage 8 (approximately 80%)
+## Progress — stage 9 (approximately 85%; E5 still partial)
 
 The WebGL scene now includes geometry, model transformations, perspective and
 orthographic projections, animation, keyboard controls and the FPS display.
@@ -54,12 +54,16 @@ the scene time, while rendering and FPS measurement continue.
 - Near 0.1 / far 20 contain the sampled view-space vertex depths, approximately 4.63–10.23.
 - Browser interaction checks: rendering and controls, with no console errors.
 
-E1–E4 experiment copies, screenshots, console outputs and draft explanations
+E1–E6 experiment copies and draft explanations, with E5 partially measured,
 are in `experiments/`. Serve the repository locally and open the experiment
 subfolders to reproduce them. The main scene code is unchanged by these copies.
 E3 measures perspective/orthographic edge lengths at a fixed pose. E4 shows
 near-plane clipping and the effect of using aspect=1 in a wide window.
-The independent Chrome/Firefox check and experiments E5–E6 are still pending.
+E6 verifies the 120° diagonal-axis rotation and manually divides clip coordinates
+by w. E5 records a five-second baseline dt sample and a 14.017-second orbit.
+The independent Chrome/Firefox check, DevTools CPU throttling and the E5
+five-second tab-return observation are still pending; no result is claimed
+for those checks. See `experiments/E5.md` for the remaining procedure.
 writeup.pdf and the demo video are not yet produced. This is not a complete
 submission ZIP. At least five meaningful commits across two real calendar days
 are required; the current PA2 history already meets that minimum.

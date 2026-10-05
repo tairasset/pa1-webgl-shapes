@@ -1,0 +1,6 @@
+instructions {"key":"B starts a 5-second dt sample and a 14-second orbit measurement"}
+run started {"clamp":true,"period":14}
+dt five seconds {"wallSeconds":5,"count":293,"mean":0.017064846416382253,"max":0.09989999999999988}
+one orbit {"wallSeconds":14.016700000000002,"simulatedSeconds":14.016700000000002,"period":14,"frameTolerance":0.016799999999999926}
+long frame {"rawDt":0.7834000000000003,"usedDt":0.1,"t":80.24909999999998}
+long frame {"rawDt":0.8331999999999908,"usedDt":0.1,"t":80.44899999999998}
