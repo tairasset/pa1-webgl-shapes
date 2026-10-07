@@ -35,7 +35,7 @@ Internet is required to load glMatrix 2.8.1 from cdnjs.
 FOV is limited to 20–100 degrees. Orthographic half-height is
 camera-target distance × tan(FOV/2); horizontal bounds include aspect ratio.
 
-## Progress — stage 10 (approximately 90%)
+## Progress — stage 11 (approximately 95%)
 
 The WebGL scene now includes geometry, model transformations, perspective and
 orthographic projections, animation, keyboard controls and the FPS display.
@@ -65,6 +65,7 @@ E5 now also records a 14.0002-second orbit with real DevTools CPU 4× slowdown
 in native Edge and a 5.1263-second real tab switch without the dt clamp.
 The independent Chrome/Firefox check is still pending. Edge results are
 identified as such in `experiments/E5.md`; no Chrome/Firefox run is claimed.
-writeup.pdf and the demo video are not yet produced. This is not a complete
-submission ZIP. At least five meaningful commits across two real calendar days
+writeup.pdf now includes E1–E6, 16 evidence figures and the development log:
+10 pages, 1,153 words including captions and page footers. The demo video and
+final submission ZIP are still pending. At least five meaningful commits across two real calendar days
 are required; the current PA2 history already meets that minimum.
