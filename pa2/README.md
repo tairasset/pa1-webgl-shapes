@@ -19,6 +19,7 @@ scale 0.65 + 0.15 sin(2πt/3); target (0,0,0), up (0,1,0).
 
 From the repository root, run `python -m http.server 8765`.
 Open `http://localhost:8765/pa2/` in Chrome or Firefox.
+From an extracted ZIP, serve the extracted folder and open `http://localhost:8765/`.
 Internet is required to load glMatrix 2.8.1 from cdnjs.
 
 ## Controls
@@ -35,7 +36,7 @@ Internet is required to load glMatrix 2.8.1 from cdnjs.
 FOV is limited to 20–100 degrees. Orthographic half-height is
 camera-target distance × tan(FOV/2); horizontal bounds include aspect ratio.
 
-## Progress — stage 11 (approximately 95%)
+## Progress — stage 12 (approximately 95%; final browser steps blocked)
 
 The WebGL scene now includes geometry, model transformations, perspective and
 orthographic projections, animation, keyboard controls and the FPS display.
@@ -69,3 +70,8 @@ writeup.pdf now includes E1–E6, 16 evidence figures and the development log:
 10 pages, 1,153 words including captions and page footers. The demo video and
 final submission ZIP are still pending. At least five meaningful commits across two real calendar days
 are required; the current PA2 history already meets that minimum.
+
+The current archive is explicitly named `PA2_242458_Asset_DRAFT.zip` because
+the video and Chrome/Firefox check are missing. See `FINAL-CHECKLIST.md` for
+the exact remaining checks, 26-second recording plan and final ZIP procedure.
+The numerical checks pass; they do not replace a browser rendering test.
