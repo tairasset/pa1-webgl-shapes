@@ -1,1 +1,1 @@
-{"name":"pa3-242458-ar-speaker","version":"1.0.0","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs"}}
+{"name":"pa3-242458-ar-speaker","version":"1.0.0","private":true,"type":"module","dependencies":{"three":"0.186.1"},"scripts":{"test":"node --experimental-vm-modules --test tests/*.test.mjs"}}

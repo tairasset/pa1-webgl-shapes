@@ -38,9 +38,9 @@ export function buildProduct(library = THREE) {
   mesh(new T.BoxGeometry(0.25, 1, 0.284), cabinet, 0, 0.5, -0.008);
   mesh(new T.BoxGeometry(0.226, 0.974, 0.006), baffle, 0, 0.5, 0.137);
   for (const [height, radius] of [[0.68, 0.087], [0.31, 0.087]]) {
-    const driver = mesh(new T.CylinderGeometry(radius, radius, 0.01, 64), surround, 0, height, 0.145);
+    const driver = mesh(new T.CylinderGeometry(radius, radius, 0.006, 64), surround, 0, height, 0.144);
     driver.rotation.x = Math.PI / 2;
-    const centre = mesh(new T.CylinderGeometry(radius * 0.72, radius * 0.72, 0.003, 48), cone, 0, height, 0.148);
+    const centre = mesh(new T.CylinderGeometry(radius * 0.72, radius * 0.72, 0.003, 48), cone, 0, height, 0.1485);
     centre.rotation.x = Math.PI / 2;
   }
   mesh(new T.BoxGeometry(0.04, 0.008, 0.002), cone, 0, 0.92, 0.142);
