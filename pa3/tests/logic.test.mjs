@@ -54,6 +54,7 @@ async function harness({anchors=false, anchorPromise=null}={}) {
   export function state(){return {placed,tracked,placeRequested,reticle,xrSession,sessionState,evidence,hitTestSource};}
   export function request(){placeRequested=true;}
   export function anchorMode(v){anchorsOn=v;}
+  export function sourceForTest(v){hitTestSource=v;}
   export {render,clearProducts,onSessionEnd,onSessionStarted};`;
   const module = new vm.SourceTextModule(source,{context}); await module.link(()=>{}); await module.evaluate();
   const api=module.namespace; api.setup(); api.anchorMode(anchors);
@@ -93,4 +94,13 @@ test('pending source from an ended session is cancelled rather than leaked',asyn
   const session={enabledFeatures:[],addEventListener(){},async requestReferenceSpace(){return {};},requestHitTestSource(){return pending;}};
   const start=h.api.onSessionStarted(session);await new Promise(setImmediate);h.api.onSessionEnd();resolve({cancel(){cancelled++;}});await start;
   assert.equal(cancelled,1);assert.equal(h.api.state().hitTestSource,null);
+});
+test('system invalidation of a source cannot abort reset',async()=>{
+  const h=await harness();h.api.sourceForTest({cancel(){const error=new Error('Inactive source');error.name='InvalidStateError';throw error;}});
+  assert.doesNotThrow(()=>h.api.onSessionEnd());assert.equal(h.api.state().xrSession,null);assert.equal(h.api.state().hitTestSource,null);
+});
+test('multi mode keeps five items and deletes the oldest on the sixth tap',async()=>{
+  const h=await harness({anchors:true});h.api.SETTINGS.mode='multi';
+  for(let i=0;i<6;i++){h.api.request();h.api.render(i,h.frame);await new Promise(setImmediate);}
+  assert.equal(h.api.state().placed.length,5);assert.equal(h.deletes(),1);h.api.clearProducts();assert.equal(h.deletes(),6);
 });

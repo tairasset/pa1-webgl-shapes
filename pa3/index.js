@@ -105,7 +105,7 @@ function loadScene() {
   controller = renderer.xr.getController(0);
   // XRHitTestResult and XRFrame must be used during the current frame callback.
   controller.addEventListener('select', () => { placeRequested = true; }); scene.add(controller);
-  $('overlay').addEventListener('beforexrselect', event => event.preventDefault());
+  $('ar-panel').addEventListener('beforexrselect', event => event.preventDefault());
   $('start').addEventListener('click', onRequestSession);
   $('stop').addEventListener('click', endXRSession);
   $('clear').addEventListener('click', () => { clearProducts(); record('clear'); });
@@ -169,7 +169,7 @@ async function onSessionStarted(session) {
   if (token !== generation || xrSession !== session) return;
   // Exactly one request per session, outside the render loop.
   const source = await session.requestHitTestSource({ space: viewerSpace });
-  if (token !== generation || xrSession !== session) { source.cancel(); return; }
+  if (token !== generation || xrSession !== session) { cancelSource(source); return; }
   hitTestSource = source; sessionState = 'running'; firstPoseLogged = false;
   // E4 timing begins when hit testing is ready, before the first processed frame.
   surfaceTrial = { surface: $('surface').value, started: performance.now() };
@@ -293,13 +293,20 @@ async function endXRSession() {
 }
 function onSessionEnd() {
   generation++;
-  if (hitTestSource) { hitTestSource.cancel(); hitTestSource = null; }
+  if (hitTestSource) { cancelSource(hitTestSource); hitTestSource = null; }
   if (surfaceTrial) { record('surface-trial-ended-without-hit', { surface: surfaceTrial.surface, observedSeconds: (performance.now() - surfaceTrial.started) / 1000 }); surfaceTrial = null; }
   clearProducts(); xrSession = null; localSpace = null; viewerSpace = null;
   tracked = false; anchorsOn = false; currentHit = null; lastAngle = null;
   captureRequested = false; reticle.visible = false; sessionState = 'idle';
   document.body.classList.remove('xr-active'); $('start').disabled = false; $('start').textContent = 'START AR';
   $('request-anchors').disabled = false; record('session-end'); setStatus(); animate();
+}
+function cancelSource(source) {
+  try { source.cancel(); }
+  catch (error) {
+    // A system exit may already have made the source inactive. Still reset all state.
+    if (error.name !== 'InvalidStateError') record('source-cancel-warning', { message: error.message });
+  }
 }
 function downloadEvidence() {
   const blob = new Blob([JSON.stringify({ ...identity, exportedAt: new Date().toISOString(), events: evidence }, null, 2)], { type: 'application/json' });
