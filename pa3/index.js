@@ -171,6 +171,9 @@ async function onSessionStarted(session) {
   const source = await session.requestHitTestSource({ space: viewerSpace });
   if (token !== generation || xrSession !== session) { source.cancel(); return; }
   hitTestSource = source; sessionState = 'running'; firstPoseLogged = false;
+  // E4 timing begins when hit testing is ready, before the first processed frame.
+  surfaceTrial = { surface: $('surface').value, started: performance.now() };
+  record('surface-trial-start', { surface: surfaceTrial.surface, method: 'first frame after source ready' });
   document.body.classList.add('xr-active'); $('start').textContent = 'AR running';
   $('request-anchors').disabled = true;
   record('session-start', { ...identity, requestedAnchors: $('request-anchors').checked,

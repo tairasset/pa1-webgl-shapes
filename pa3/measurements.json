@@ -1,0 +1,18 @@
+{
+  "student_id": "242458",
+  "device_model": null,
+  "os_version": null,
+  "browser_version": null,
+  "camera_start_local": null,
+  "camera_after_1m_local": null,
+  "hit_viewer_matrix": null,
+  "hit_local_matrix": null,
+  "drift_anchors_on_cm": null,
+  "drift_anchors_off_cm": null,
+  "surface_trials": [],
+  "observed_height_cm": null,
+  "scale_reference": null,
+  "retailer_observations": [],
+  "screenshots": {},
+  "tracking_notes": null
+}
