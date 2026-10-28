@@ -1,11 +1,11 @@
 {
-  "report_words": 1126,
+  "report_words": 1139,
   "e6_words": 106,
   "report_pages": 7,
   "defence_pages": 4,
   "all_device_evidence_complete": false,
-  "pdf_words_including_footers": 1183,
-  "all_final_pdf_pages_visually_reviewed": true,
+  "pdf_words_including_footers": 1196,
   "application_sha256": "cc0fadd5576b67b7b7494a0c5b297725243b865ce8062bcfc0d9fe61cfdd9510",
-  "html_sha256": "8c24468b4a76cba15ebdbf7a1a55ce2ccde71f2127cd1feede1cbf3158ad88a1"
+  "html_sha256": "8c24468b4a76cba15ebdbf7a1a55ce2ccde71f2127cd1feede1cbf3158ad88a1",
+  "all_final_pdf_pages_visually_reviewed": true
 }

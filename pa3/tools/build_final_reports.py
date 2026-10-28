@@ -40,7 +40,7 @@ def image_pair(story,title,left,right,left_caption,right_caption):
 def english_report():
     story=[p('A speaker in the room','title'),p('Tair Asset | AIB-2401 | 242458<br/>PA3 - AR product preview | 28 October 2026','meta')]
     story += [p('ID 242458 selects a 0.25 m wide, 0.30 m deep, 1.00 m tall speaker: single placement, 12-degree tolerance, front facing the user at placement. A valid second tap replaces the object. The model uses seven primitives, standard materials and two lights.'),
-      p('<b>Test record.</b> Borrowed Android; model and actual OS version were not recorded. The browser reported Chrome 152.0.0.0. Original screenshots and four JSON exports are retained. This report finalizes the available evidence; missing measurements remain explicitly missing. No device demo video was supplied.','small')]
+      p("<b>Device access.</b> My own phone is an iPhone; I borrowed a friend's Android for about an hour. Testing was slow and sometimes unresponsive, and I could not reliably record every action. The cause was not diagnosed. Some measurements and the continuous demo remain unfinished. Model and OS were not recorded; the browser reported Chrome 152.0.0.0.",'small')]
     story += [p('E1 - Reference spaces','h1'),p('<b>Prediction.</b> A roughly one-metre forward walk changes local camera coordinates. The same hit has different viewer and local coordinates.'),
       p('<b>Result.</b> In export-1, the last session starts at '+vec(D['camera_start_local'])+' m. The later capture is '+vec(D['camera_after_1m_local'])+' m: displacement 1.279 m. Between the two manual captures it is 1.165 m. The physical route was not tape-verified. Both hit matrices below come from the same first capture.'),
       p('Viewer hit: '+escape(array(D['hit_viewer_matrix'])),'small'),
@@ -112,5 +112,10 @@ if __name__=='__main__':
     stats=english_report();defence()
     from pypdf import PdfReader
     stats.update(report_pages=len(PdfReader(ROOT/'writeup.pdf').pages),defence_pages=len(PdfReader(ROOT/'DEFENSE_FINAL_RU.pdf').pages),all_device_evidence_complete=False)
+    stats['pdf_words_including_footers']=len(re.findall(r'\S+',' '.join(page.extract_text() for page in PdfReader(ROOT/'writeup.pdf').pages)))
+    if stats['pdf_words_including_footers']>1200:raise ValueError('PDF text including footers exceeds 1200 words')
+    import hashlib
+    stats['application_sha256']=hashlib.sha256((ROOT/'index.js').read_bytes()).hexdigest()
+    stats['html_sha256']=hashlib.sha256((ROOT/'index.html').read_bytes()).hexdigest()
     (ROOT/'final_report_stats.json').write_text(json.dumps(stats,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(stats))

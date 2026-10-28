@@ -1,6 +1,5 @@
+My own phone is an iPhone, so I used a friend's Android for testing. I could borrow it for about an hour. During that time I experienced lag, delayed responses and difficulty recording some test actions reliably. I was unable to determine whether these issues came from the device, browser or application. I collected the screenshots and logs included in the report, but could not complete all physical measurements or the required continuous demo within the available time. The report identifies the completed tests and the missing evidence. I would appreciate consideration of the submitted work with these limitations in mind.
+
 GitHub repository: https://github.com/tairasset/pa1-webgl-shapes
 PA3 source branch and folder: https://github.com/tairasset/pa1-webgl-shapes/tree/pa3-ar-speaker/pa3
 HTTPS application: https://tairasset.github.io/pa1-webgl-shapes/
-
-The report documents the supplied measurements and their limitations.
-No continuous device demo video is included.

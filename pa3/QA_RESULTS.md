@@ -35,7 +35,7 @@ On 28 October, the updated local page was reloaded and rechecked in the in-app b
 
 ## Document inspection
 
-The final writeup.pdf has seven pages: three text/data pages and four screenshot pages. Its content counter is 1,126 words including tables and captions; PDF extraction including all page footers gives 1,183 tokens separated by whitespace, still below 1,200. E6 has 106 words. DEFENSE_FINAL_RU.pdf has four pages. Every rendered page of both final PDFs was visually inspected after the last edit: text, matrix tables, screenshots, captions and footers fit without clipping. Black serif headings, charcoal tables and neutral backgrounds are used.
+The final writeup.pdf has seven pages: three text/data pages and four screenshot pages. Its content counter is 1,139 words including tables and captions; PDF extraction including all page footers gives 1,196 tokens separated by whitespace, still below 1,200. E6 has 106 words. DEFENSE_FINAL_RU.pdf has four pages. Every rendered page of both final PDFs was visually inspected after the last edit: text, matrix tables, screenshots, captions and footers fit without clipping. Black serif headings, charcoal tables and neutral backgrounds are used.
 
 The older 954-word pre-device draft and six-page preparation guides are historical materials, superseded for delivery by the final report and final defence guide.
 
@@ -52,3 +52,5 @@ The user supplied 38 screenshot attachments (30 unique original files by SHA-256
 Export-3 provides new-session hit timing of 8.6658 s for the label Patterned and a 20 s timeout for Plain white. Manual repeated hits at 0.0883/0.0366 s are excluded from new-session timing. Material/time matching for the patterned trial and a third timed material are not established. Photos of two modes do not establish centimetre drift. Physical height, device identity, controlled tilted-board testing and absence of device console errors remain unverified. No demo.mp4 was supplied. The user explicitly requested finalization without further filming; no invented evidence is substituted. See FINAL_EVIDENCE_REVIEW_RU.md and SUBMISSION_LIMITATIONS.txt.
 
 Nine structural validation tests were rerun successfully during finalization. The validator correctly rejects this actual dataset as incomplete. The package script stays strict by default; the explicit AllowIncompleteEvidence mode includes the limitations notice while retaining commit-history and deadline checks.
+
+The final device-access revision adds the student's account of borrowing a friend's Android for about an hour, owning an iPhone and encountering lag/unreliable recording. The source of those difficulties was not diagnosed. Both updated first pages were rendered and visually inspected; the remaining nine pages are pixel-identical to the previously reviewed renderings.

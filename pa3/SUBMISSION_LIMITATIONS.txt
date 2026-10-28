@@ -4,6 +4,13 @@ PA3 242458 - FINALIZED FROM THE EVIDENCE SUPPLIED
 This package contains the application and a finalized report with explicit
 limitations. It is not a claim that every PA3 requirement has been completed.
 
+Device access: the student used a friend's Android phone for about one hour.
+The student's own phone is an iPhone, unsupported under the PA3 device rules.
+This limited the time available for measurements and a continuous recording.
+The student also reported lag, delayed responses and difficulty recording some
+test actions reliably. These are the student's observations; no diagnosis
+establishes whether the device, browser or application caused them.
+
 No demo.mp4 was supplied. No slideshow or fabricated recording is substituted.
 The assignment requires a continuous 45-90 second device screen recording.
 Without it, B, D and E are capped at 50% unless the specified lab arrangement
