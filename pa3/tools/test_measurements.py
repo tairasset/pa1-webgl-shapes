@@ -14,6 +14,7 @@ class MeasurementValidationTests(unittest.TestCase):
         self.data={'student_id':'242458','device_model':'TEST FIXTURE','os_version':'TEST','browser_version':'TEST',
             'scale_reference':'TEST ruler','tracking_notes':'TEST observations','camera_start_local':{'x':0,'y':0,'z':0},
             'camera_after_1m_local':[0,0,-1],'hit_local_matrix':identity,'hit_viewer_matrix':identity.copy(),
+            'placement_hit_matrix':identity.copy(),
             'drift_anchors_on_cm':0,'drift_anchors_off_cm':1,'observed_height_cm':100,
             'surface_trials':[{'surface':name,'success':True,'seconds':1} for name in ('patterned','white','glass')],
             'retailer_observations':['TEST failure and fix one','TEST failure and fix two'],
@@ -39,6 +40,9 @@ class MeasurementValidationTests(unittest.TestCase):
     def test_outside_project_screenshot_is_rejected(self):
         self.data['screenshots']['green']='../outside.png'
         self.assertTrue(any('Screenshot green' in x for x in validate_measurements(self.data,self.root)))
+    def test_e1_hit_does_not_replace_e3_placement_evidence(self):
+        self.data.pop('placement_hit_matrix')
+        self.assertTrue(any('placement_hit_matrix' in x for x in validate_measurements(self.data,self.root)))
     def test_success_without_latency_is_rejected_but_timeout_can_have_no_hit_time(self):
         self.data['surface_trials'][0].pop('seconds')
         self.assertTrue(any('successful trial' in x for x in validate_measurements(self.data,self.root)))

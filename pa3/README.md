@@ -31,7 +31,9 @@ Open `http://localhost:8767/`. The desktop preview can rotate. An unsupported br
 
 ## Run on Android
 
-Use an ARCore-compatible Android device, install/update Google Play Services for AR and open the page in current Chrome. Enable USB debugging, connect the device and allow the computer. Then use Chrome's `chrome://inspect/#devices` port forwarding: map device port **8767** to **localhost:8767**, or run:
+For the published page, use the HTTPS link above in Chrome on an ARCore-compatible Android device with Google Play Services for AR. USB debugging, ADB and a local server are not needed for this hosted route. Record the actual device, OS and browser versions. The full measurement/screenshot/video procedure is in `ANDROID_STEPS_RU.md` and `android_steps_ru.pdf`.
+
+For local development instead, enable USB debugging, connect the device and allow the computer. Use Chrome's `chrome://inspect/#devices` port forwarding: map device port **8767** to **localhost:8767**, or run:
 
 ```text
 adb reverse tcp:8767 tcp:8767
@@ -59,13 +61,13 @@ Live-check changes to SETTINGS update the displayed threshold, placement mode, c
 
 Capture pose records the camera in local space and the same hit in viewer and local spaces, including the 16 matrix elements, normal column and tilt. Download evidence JSON after leaving AR. Coordinates remain on the device until the user downloads/shares them. Camera frames are neither requested as raw images nor uploaded.
 
-Choose the E4 surface **before START AR**. A fresh session automatically measures from source readiness to its first hit, with a 20-second timeout. Record at least three fresh-session trials per surface. The overlay timing controls are for explicit additional trials; do not present already-tracked repeated hits as cold-start measurements. The desktop labels are also available after ending the session.
+Choose the E4 surface **before START AR**. A fresh session automatically measures from source readiness to its first hit, with a 20-second timeout. PA3 requires three different surfaces; three trials per surface are recommended, not an extra course requirement. The timeout is our measurement protocol. A fresh session does not prove the device discarded an existing room map. The overlay timing controls are for explicit additional trials; do not present already-tracked repeated hits as cold-start measurements. Export before any page reload: the in-memory journal survives STOP/START but not reload.
 
 For the E2 comparison, uncheck "Request anchors for the next session" before starting a fresh session. Only this explicit experiment omits anchors from the optional-feature request. Normal mode uses anchors whenever they appear in `session.enabledFeatures`. If unavailable, the page displays `anchors: off` and retains the placement matrix. When anchor creation itself fails, that placement is removed and an explanatory message is shown.
 
 ## Porting notes
 
-1. **Renderer constructor.** Use a WebGL 2 context and pass the options object `new THREE.WebGLRenderer({ canvas, context: gl, alpha: true })`. Passing `gl` as the constructor argument is not a context assignment; legacy WebGL 1 is unsupported on this release. Create the context with `canvas.getContext('webgl2', { xrCompatible: true, alpha: true })` and check for null.
+1. **Renderer constructor.** Use a WebGL 2 context and pass the options object `new THREE.WebGLRenderer({ canvas, context: gl, alpha: true })`. The supplied Ch. 7 PDF p. 5 already uses the options object correctly; its p. 4 creates a legacy `webgl` context, which must become WebGL 2 for this release. Do not attribute a `WebGLRenderer(gl)` listing to that PDF. Create the context with `canvas.getContext('webgl2', { xrCompatible: true, alpha: true })` and check for null.
 2. **Geometry names.** Use `RingGeometry`, `BoxGeometry` and `CylinderGeometry`. Old `*BufferGeometry` constructor aliases from the book are no longer exported. Modern geometries already derive from `BufferGeometry`. Rotate the ring's geometry into the XZ plane; its object matrix then receives the unmodified hit pose.
 3. **Hit-test source lifetime.** Request the viewer reference space and a single hit-test source once in `onSessionStarted`, outside the frame loop. Frames call `getHitTestResults(source)` only. Cancel the source on end. A generation token also cancels a source that resolves after its session has already ended.
 
@@ -89,13 +91,13 @@ Line numbers refer to the actual npm **0.186.1** file, which differs from the r1
 - Requesting the configured reference space: lines 525–526.
 - Attaching/starting the XR animation context: lines 528–529.
 
-Three.js performs the GL compatibility, XR render-layer setup and XR reference/animation setup. A separate book-style `setupWebGLLayer()` would duplicate this work and is not needed. The chapter's original three-task wording should be checked against the student's chapter copy; these concrete calls are directly verified in the pinned source.
+The supplied Ch. 7 PDF pp. 9–11 calls these the three critical tasks: (1) GL compatibility and XR layer setup, (2) `setReferenceSpaceType`, (3) `setSession`. Its slide 9 groups the same operations differently. `setSession` handles task 1; task 2 remains our explicit `setReferenceSpaceType('local')` call (setter at 311–315, default `local-floor` at line 45). It requests the selected type at 525–526; it does not choose `local` for us. Task 3 is our awaited `setSession(session)` call. A separate book-style `setupWebGLLayer()` would duplicate the layer setup and is unnecessary. See `LECTURE_AUDIT_RU.md` for the source-by-source comparison.
 
 ## Checks
 
 Optional development dependencies are pinned in `package.json`. After `npm install`, run `npm test`. The suite uses real Three.js geometry and simulated XR frames. Simulations exercise tilt boundaries, four facing directions, tracking loss, emulated position, rejected taps, single-mode replacement, anchor deletion, pending asynchronous cleanup, source cancellation and restart. They are not device experiment results.
 
-The current suite has 28 application tests. Run `python tools/test_measurements.py` for eight additional structural evidence-validation checks. The validator rejects empty device fields, invalid coordinates/matrices, non-finite measurements, repeated surface names and missing/outside-project screenshot paths. It checks data structure, not the authenticity of a measurement or screenshot. The final package and report builder both use it. The report builder enforces 1,200 words including tables/diagram labels and the separate 150-word E6 limit.
+The current suite has 28 application tests. Run `python tools/test_measurements.py` for nine additional structural evidence-validation checks. The validator rejects empty device fields, invalid coordinates/matrices, a missing E3 placement matrix, non-finite measurements, repeated surface names and missing/outside-project screenshot paths. E1 uses paired `hit_viewer_matrix` / `hit_local_matrix` from one capture; E3 uses `placement_hit_matrix` from an actual `placement` event. Structure checks cannot authenticate a measurement or screenshot. The final package and report builder both use the validator. The report builder enforces 1,200 words including tables/diagram labels and the separate 150-word E6 limit.
 
 Before submission complete `measurements.json` using real observations, add the required screenshots and record `demo.mp4` on the AR device. `writeup_pre_device.pdf` is a technical draft with explicitly unmeasured results. It is not a completed field report. Use `tools/build_reports.py` to rebuild once evidence is available; use `tools/package.ps1` only after the final report/video and commit-history requirements are met.
 
@@ -105,9 +107,10 @@ The working branch is `pa3-ar-speaker`. PA3 development spans 27 and 28 October 
 
 ## Sources
 
-- [Three.js pinned WebXRManager source](https://cdn.jsdelivr.net/npm/three@0.186.1/src/renderers/webxr/WebXRManager.js)
-- [WebXR Device API](https://www.w3.org/TR/webxr/)
-- [WebXR Hit Test module](https://immersive-web.github.io/hit-test/)
-- [WebXR Anchors module](https://immersive-web.github.io/anchors/)
-- [WebXR DOM Overlays module](https://immersive-web.github.io/dom-overlays/)
-- [ARCore fundamental concepts](https://developers.google.com/ar/develop/fundamentals)
+- Supplied PA3 assignment (variant, Tasks A–E, experiments E1–E6 and submission rules).
+- Supplied Baruah Ch. 5 PDF and corresponding 19-slide presentation: Three.js scene, meshes, lights, materials and units.
+- Supplied Ch. 6 PDF and corresponding 17-slide presentation: WebXR lifecycle, secure context and device connection.
+- Supplied Ch. 7 PDF and corresponding 20-slide presentation: reference spaces, AR lifecycle, hit testing and placement.
+- [Pinned WebXRManager source, explicitly required by PA3 E2(c)](https://cdn.jsdelivr.net/npm/three@0.186.1/src/renderers/webxr/WebXRManager.js).
+
+No new external research was used for the lecture audit. Detailed VIO internals and a full privacy model of every WebXR extension are not supplied by these chapters. The report confines those explanations to the concepts named by E4 and the data actually read by this implementation.

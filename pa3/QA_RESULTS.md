@@ -21,7 +21,7 @@ Twenty-eight application tests passed against pinned Three.js 0.186.1 geometry a
 
 Sixteen additional scenarios cover immediate pause without animation frames; avoiding viewer/hit/anchor queries while blurred or hidden; fresh-pose/hit/tap recovery; ordinary tracking-loss recovery; interrupted surface timing; starting behind system UI; stale session events; delayed reference-space results; missing anchor poses; persistent anchor-failure messages; dynamic variant labels; yaw-only placement on a tilted surface; keep-hit orientation; default feature negotiation; denied permissions; and failed STOP recovery.
 
-Eight Python tests passed for evidence validation: valid structural shapes (including zero drift), empty data, blank device/non-finite measurements, booleans masquerading as measurements, repeated surface names, malformed matrices, outside-project screenshot paths, and success/failure timing rules. These tests use explicitly synthetic fixtures and never populate measurements.json.
+Nine Python tests passed for evidence validation: valid structural shapes (including zero drift), empty data, blank device/non-finite measurements, booleans masquerading as measurements, repeated surface names, malformed matrices, outside-project screenshot paths, success/failure timing rules, and rejection of missing E3 placement evidence even when paired E1 hit matrices exist. These tests use explicitly synthetic fixtures and never populate measurements.json. The nine-test suite was rerun successfully after the lecture audit.
 
 The Node VM test warning about experimental module support concerns the development harness; the browser application uses native ES modules.
 
@@ -35,7 +35,13 @@ On 28 October, the updated local page was reloaded and rechecked in the in-app b
 
 ## Document inspection
 
-The English draft contains 868 counted words including table/diagram text, below the 1,200-word limit; E6 separately passes the 150-word guard. Its three rendered pages and all six pages of the updated Russian guide were visually inspected. The documents use black headings, a charcoal table header and neutral backgrounds; there is no blue report theme.
+The updated English draft contains 954 counted words including table/diagram text, below the 1,200-word limit; E6 separately passes the 150-word guard. Its three rendered pages, all six pages of the updated Russian defence guide and all six pages of the new Android field guide were visually inspected. The documents use black headings, a charcoal table header and neutral backgrounds; there is no blue report theme. The Android video storyboard stays on one page.
+
+## Supplied-course-material audit
+
+All three supplied PDF chapters (5, 6, 7) and their corresponding slide decks were consulted for the relevant implementation topics. The traceability table and exact page/slide locators are in LECTURE_AUDIT_RU.md. Ch. 7 PDF pp. 9–11 and slide 9 group the critical tasks differently; the write-up now identifies the PDF's three tasks explicitly and preserves the application's explicit local-space selection. The actual pinned WebXRManager.js source was inspected because PA3 E2(c) requires it. No new external web research was used for this audit. Previous external reference links were replaced with supplied-course references except for that mandatory source inspection.
+
+The E3 report now reads a separate placement_hit_matrix from a successful placement event and prints its numeric position as well as normal/tilt. Paired same-hit E1 matrices remain separate. All physical-result fields are still empty. Application JavaScript/HTML were unchanged in this documentation audit, so previously passed 28 application tests and browser checks were not relabelled as a new device run.
 
 ## Outstanding device checks
 

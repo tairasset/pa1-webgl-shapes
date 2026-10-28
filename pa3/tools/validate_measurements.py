@@ -15,7 +15,7 @@ def validate_measurements(data, root):
         value=data.get(key)
         values=[value.get(k) for k in ('x','y','z')] if isinstance(value,dict) else value
         if not isinstance(values,list) or len(values)!=3 or not all(finite_number(x) for x in values): errors.append(f'{key} needs three finite coordinates.')
-    for key in ('hit_viewer_matrix','hit_local_matrix'):
+    for key in ('hit_viewer_matrix','hit_local_matrix','placement_hit_matrix'):
         value=data.get(key)
         if not isinstance(value,list) or len(value)!=16 or not all(finite_number(x) for x in value):
             errors.append(f'{key} needs 16 finite values.'); continue

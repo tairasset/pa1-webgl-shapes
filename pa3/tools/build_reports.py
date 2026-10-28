@@ -76,16 +76,16 @@ def report():
     if complete:
         story.append(p('<b>Result.</b> Camera local positions were '+escape(str(d['camera_start_local']))+' and '+escape(str(d['camera_after_1m_local']))+'. Viewer and local hit matrices are printed with the evidence below.'))
     else:story.append(p('<b>Result.</b> The camera positions and paired hit poses have not been recorded on a compatible device. Capture pose exports all three from the same active frame.'))
-    story.append(p('<b>Explanation.</b> Viewer space follows the phone, so it gives the hit-test ray its direction. Local space provides the scene coordinate system for both the hit and the rendered object. A pose describes the same point relative to the requested reference space; different coordinates do not imply different physical hits. [1, 2]'))
+    story.append(p('<b>Explanation.</b> Viewer space follows the phone, so it gives the hit-test ray its direction. Local space provides the scene coordinate system for both the hit and the rendered object. A pose describes the same point relative to the requested reference space; different coordinates do not imply different physical hits. [1]'))
     story += [p('E2 Hit results and persistent attachment','h1'),p('<b>Prediction.</b> After a three-metre walk away and back, anchor-based attachment may follow map corrections better than a frozen local matrix. Neither method guarantees zero drift.')]
     if complete:story.append(p(f"<b>Result.</b> Measured return drift was {d['drift_anchors_on_cm']} cm with anchors and {d['drift_anchors_off_cm']} cm without. The floor mark and device screenshots are the physical reference."))
     else:story.append(p('<b>Result.</b> Return drift is unmeasured. Simulated checks verify anchor deletion and asynchronous cleanup, not real tracking stability.'))
-    story.append(p('<b>Explanation.</b> A hit result is a frame-specific intersection, not an automatically saved spatial anchor. An anchor separately tracks a pose as mapping changes. Local-floor changes the origin to estimated floor height; it does not improve the hit-test algorithm. [1–3]'))
-    story.append(p('In npm three@0.186.1, WebXRManager.setSession already handles GL compatibility (427–431), the XR layer and render state (451–453, or 496–498), the reference space (525–526) and XR animation (528–529). A separate setupWebGLLayer is unnecessary. These lines refer to the pinned npm file, not the differently numbered r186 tag. [4]'))
+    story.append(p('<b>Explanation.</b> A hit result is a frame-specific intersection, not an automatically saved spatial anchor. PA3 requires a separate createAnchor call and per-frame anchor pose updates. Slide 16 also distinguishes transform placement from anchors. Local-floor changes the origin to estimated floor height; changing coordinates does not improve hit testing. [1, 2]'))
+    story.append(p('The PDF names three tasks: GL/layer compatibility, setReferenceSpaceType, and setSession (Ch. 7, pp. 9–11); slide 9 groups them differently. In three@0.186.1, setSession handles task 1: conditional makeXRCompatible (427–431) and XR layer/render state (451–453 or 496–498). Task 2 remains explicit: setReferenceSpaceType(\'local\'); its setter is 311–315, and setSession requests that chosen type at 525–526. Task 3 is our awaited setSession call, which also starts XR animation (528–529). Therefore no separate setupWebGLLayer is needed. [1–3]'))
     story += [PageBreak(),p('E3 Reading the surface pose','h1'),p('<b>Prediction.</b> A normal within 12 degrees of world up permits placement; a steeper normal produces a red ring and rejects the tap.'),MatrixFigure(),Spacer(1,10)]
     if complete:
-        m=d['hit_local_matrix'];length=math.sqrt(sum(m[i]**2 for i in (4,5,6)));angle=math.degrees(math.acos(max(-1,min(1,m[5]/length))))
-        story.append(p('<b>Result.</b> Recorded matrix: '+', '.join(f'{x:.6f}' for x in m)+f'. Normal = ({m[4]:.6f}, {m[5]:.6f}, {m[6]:.6f}); its length is {length:.6f}; acos({m[5]/length:.6f}) = {angle:.3f} degrees.'))
+        m=d['placement_hit_matrix'];length=math.sqrt(sum(m[i]**2 for i in (4,5,6)));angle=math.degrees(math.acos(max(-1,min(1,m[5]/length))))
+        story.append(p('<b>Result.</b> Successful placement hit matrix: '+', '.join(f'{x:.6f}' for x in m)+f'. Position = ({m[12]:.6f}, {m[13]:.6f}, {m[14]:.6f}); normal = ({m[4]:.6f}, {m[5]:.6f}, {m[6]:.6f}); length = {length:.6f}; acos({m[5]/length:.6f}) = {angle:.3f} degrees.'))
     else:story.append(p('<b>Result.</b> The two required device screenshots and one measured matrix are pending. Automated rotations at 0, 8, 12, 16, 45, 90 and 180 degrees passed the mathematical filter check.'))
     story.append(p('<b>Explanation.</b> The Y column is the surface normal. Its dot product with world up equals its Y component. Normalise, clamp the cosine and apply acos. The exact 12 degree boundary is accepted; 12.001 degrees is rejected. The position column does not determine tilt.'))
     story += [p('E4 Surface detection','h1'),p('<b>Prediction.</b> A textured surface should usually offer more stable visual features than a plain white or reflective surface. This is a hypothesis, not a measured ordering.')]
@@ -94,7 +94,7 @@ def report():
         for item in d['surface_trials']:rows.append([escape(str(item['surface'])),str(item['seconds']) if item['success'] else 'No hit in 20 s',str(item['success'])])
     else:
         rows += [['Patterned','Not measured','Not tested'],['Plain white','Not measured','Not tested'],['Glass or glossy','Not measured','Not tested']]
-    story += [p('<b>Result.</b> '+('The observed trials are listed below.' if complete else 'No compatible-device surface trials have been completed.')),table(rows,[CW*.42,CW*.33,CW*.25]),Spacer(1,12),p('<b>Explanation.</b> The device matches camera feature points across frames and combines their motion with accelerometer and gyroscope measurements. Visual-inertial odometry estimates device motion; mapping supports surface estimation. Low texture, reflections, motion blur and poor lighting can weaken these estimates. Time begins when the source is ready; a 20-second timeout is logged as failure. [5]')]
+    story += [p('<b>Result.</b> '+('The observed trials are listed below.' if complete else 'No compatible-device surface trials have been completed.')),table(rows,[CW*.42,CW*.33,CW*.25]),Spacer(1,12),p('<b>Explanation.</b> E4 asks us to connect camera feature points, motion sensors and visual-inertial odometry: visual references and motion measurements jointly estimate device movement, supporting surface detection. Our code receives the resulting poses and intersections, not the feature detector itself. Surface-dependent differences must be explained from observations; low texture and reflections are hypotheses to test. Our timing protocol starts at source readiness and records no hit within 20 seconds as failure. [2]')]
     story += [PageBreak(),p('E5 Scale check','h1'),p('<b>Prediction.</b> A one-metre geometry should appear one metre tall, within the uncertainty of tracking and measurement.')]
     if complete:
         error=float(d['observed_height_cm'])-100
@@ -103,12 +103,11 @@ def report():
     story.append(p('<b>Explanation.</b> A biased surface or tracking estimate can change apparent placement. A reference ruler at a different depth, perspective or an imprecise reading can also distort the comparison. The reference should stand next to the product at the same depth.'))
     story += [p('E6 Retail implications and privacy','h1')]
     retail=('Observed failures: '+ '; '.join(escape(str(x)) for x in d['retailer_observations'])+'. ') if complete else 'Device-specific failure observations remain pending. Two risks to test are a delayed reticle, which could make a shopper abandon the preview, and return drift, which could undermine confidence in fit. A scan-progress prompt and a rescan option are candidate fixes. '
-    retail_text=retail+'For a Kazakhstani retailer, fit claims should include measured uncertainty. With these requested features, the page can read device poses, hit poses and anchors. It does not automatically receive raw camera pixels, all feature points or a complete room mesh. Raw-camera access is a separate capability, not requested here. Explain why AR permission is needed and whether spatial data leaves the device. This page uploads neither camera images nor pose logs.'
+    retail_text=retail+'For a Kazakhstani retailer, fit claims should include measured uncertainty. This implementation reads device poses, hit transforms and anchor poses. It neither reads raw camera pixels nor requests a full room mesh or feature-point map. Seeing the camera background does not mean our script reads its pixels. Tell users why tracking permission is needed and that exported diagnostics contain spatial coordinates. The page does not upload camera images or pose logs. This describes our requested features, not every possible WebXR extension.'
     if len(re.findall(r'\S+',re.sub('<[^>]+>',' ',retail_text)))>150:raise ValueError('E6 exceeds 150 words; shorten the observed failures and fixes.')
     story.append(p(retail_text))
     story += [p('Development log','h1'),p('The first preview hid the light driver membranes behind the surround caps.<br/>Visual inspection and component depth comparison identified the overlap.<br/>The membrane depth was corrected and checked against bounds in commit e10f7e2.<br/>Simulated frame tests also cover replacement, Clear and delayed anchors.','small'),p('Sources','h1')]
-    links=[('1','WebXR Device API','https://www.w3.org/TR/webxr/'),('2','WebXR Hit Test Module','https://immersive-web.github.io/hit-test/'),('3','WebXR Anchors Module','https://immersive-web.github.io/anchors/'),('4','Three.js 0.186.1 WebXRManager source','https://cdn.jsdelivr.net/npm/three@0.186.1/src/renderers/webxr/WebXRManager.js'),('5','Google ARCore fundamental concepts','https://developers.google.com/ar/develop/fundamentals')]
-    for n,label,url in links:story.append(p(f'{n}. <link href="{url}" color="#4d4f44">{label}</link>','small'))
+    story.append(p('1. Supplied Baruah Ch. 7 PDF: pp. 7–11, 14–19; supplied Ch. 7 slides: 8–9, 11–16.<br/>2. Supplied PA3 assignment: Tasks A–E and write-up E1–E6.<br/>3. Pinned three@0.186.1 WebXRManager.js, inspected as E2(c) requires: <link href="https://cdn.jsdelivr.net/npm/three@0.186.1/src/renderers/webxr/WebXRManager.js" color="#4d4f44">versioned source</link>.<br/>4. Supplied Ch. 5 PDF: pp. 7–10, 26, 35; Ch. 6 PDF: pp. 9–10, 24–27.','small'))
     if complete:
         story.append(PageBreak());story.append(p('Recorded device evidence','h1'))
         for key in image_keys:
@@ -132,8 +131,9 @@ def inline(text):
     text=re.sub(r'\*\*(.+?)\*\*',r'<b>\1</b>',text)
     return re.sub(r'`(.+?)`',r'<font name="BodyBold">\1</font>',text)
 
-def guide():
-    lines=(ROOT/'DEFENSE_RU.md').read_text(encoding='utf-8').splitlines()
+def guide(source='DEFENSE_RU.md', output='defense_ru.pdf'):
+    lines=(ROOT/source).read_text(encoding='utf-8').splitlines()
+    body_style=styles['body'] if source=='DEFENSE_RU.md' else ParagraphStyle('fieldBody',parent=styles['body'],leading=13.2,spaceAfter=8)
     story=[];i=0
     while i<len(lines):
         line=lines[i].strip()
@@ -146,9 +146,12 @@ def guide():
                 i+=1
             story.extend([table(rows,[CW*.34,CW*.66]),Spacer(1,12)]);continue
         if line.startswith('# '):story.append(Paragraph(inline(line[2:]),styles['title']))
-        elif line.startswith('## '):story.append(Paragraph(inline(line[3:]),styles['h1']))
-        else:story.append(Paragraph(inline(line),styles['body']))
+        elif line.startswith('## '):
+            if source=='ANDROID_STEPS_RU.md' and line.startswith(('## 9.','## 10.')):story.append(PageBreak())
+            story.append(Paragraph(inline(line[3:]),styles['h1']))
+        else:story.append(Paragraph(inline(line),body_style))
         i+=1
-    path=ROOT/'defense_ru.pdf';build(path,story);print(json.dumps({'guide':str(path)}))
+    path=ROOT/output;build(path,story);print(json.dumps({'guide':str(path)}))
 
-if __name__=='__main__':report();guide()
+if __name__=='__main__':
+    report();guide();guide('ANDROID_STEPS_RU.md','android_steps_ru.pdf')
