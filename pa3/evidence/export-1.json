@@ -1,0 +1,244 @@
+{
+  "studentId": "242458",
+  "variant": {
+    "product": 8,
+    "mode": "single",
+    "tolerance": 12,
+    "facesUser": true
+  },
+  "threeVersion": "0.186.1",
+  "exportedAt": "2026-10-28T11:25:33.362Z",
+  "events": [
+    {
+      "event": "surface-trial-start",
+      "at": "2026-10-28T11:06:58.737Z",
+      "elapsedMs": 72048,
+      "surface": "Patterned surface",
+      "method": "first frame after source ready"
+    },
+    {
+      "event": "session-start",
+      "at": "2026-10-28T11:06:58.752Z",
+      "elapsedMs": 72062,
+      "studentId": "242458",
+      "variant": {
+        "product": 8,
+        "mode": "single",
+        "tolerance": 12,
+        "facesUser": true
+      },
+      "threeVersion": "0.186.1",
+      "requestedAnchors": true,
+      "enabledFeatures": [
+        "local",
+        "viewer",
+        "hit-test",
+        "dom-overlay",
+        "anchors"
+      ],
+      "anchorsOn": true,
+      "domOverlay": "screen",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36"
+    },
+    {
+      "event": "camera-at-session-start",
+      "at": "2026-10-28T11:07:00.560Z",
+      "elapsedMs": 73870,
+      "position": {
+        "x": -0.017071139067411423,
+        "y": 0.03448403254151344,
+        "z": -0.040145616978406906,
+        "w": 1
+      }
+    },
+    {
+      "event": "surface-trial-timeout",
+      "at": "2026-10-28T11:07:18.790Z",
+      "elapsedMs": 92100,
+      "surface": "Patterned surface",
+      "seconds": 20,
+      "success": false
+    },
+    {
+      "event": "clear",
+      "at": "2026-10-28T11:08:12.273Z",
+      "elapsedMs": 145583
+    },
+    {
+      "event": "tracking-reacquired",
+      "at": "2026-10-28T11:08:13.904Z",
+      "elapsedMs": 147214
+    },
+    {
+      "event": "session-end",
+      "at": "2026-10-28T11:09:28.697Z",
+      "elapsedMs": 222006
+    },
+    {
+      "event": "surface-trial-start",
+      "at": "2026-10-28T11:24:16.808Z",
+      "elapsedMs": 1110117,
+      "surface": "Patterned surface",
+      "method": "first frame after source ready"
+    },
+    {
+      "event": "session-start",
+      "at": "2026-10-28T11:24:16.809Z",
+      "elapsedMs": 1110119,
+      "studentId": "242458",
+      "variant": {
+        "product": 8,
+        "mode": "single",
+        "tolerance": 12,
+        "facesUser": true
+      },
+      "threeVersion": "0.186.1",
+      "requestedAnchors": true,
+      "enabledFeatures": [
+        "local",
+        "viewer",
+        "hit-test",
+        "dom-overlay",
+        "anchors"
+      ],
+      "anchorsOn": true,
+      "domOverlay": "screen",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36"
+    },
+    {
+      "event": "camera-at-session-start",
+      "at": "2026-10-28T11:24:18.977Z",
+      "elapsedMs": 1112287,
+      "position": {
+        "x": -0.006014999933540821,
+        "y": 0.07398021221160889,
+        "z": 0.02418084815144539,
+        "w": 1
+      }
+    },
+    {
+      "event": "surface-trial-first-hit",
+      "at": "2026-10-28T11:24:27.175Z",
+      "elapsedMs": 1120485,
+      "surface": "Patterned surface",
+      "seconds": 10.368199999988079,
+      "success": true,
+      "tilt": 0,
+      "valid": true
+    },
+    {
+      "event": "tracking-reacquired",
+      "at": "2026-10-28T11:24:27.177Z",
+      "elapsedMs": 1120486
+    },
+    {
+      "event": "pose-capture",
+      "at": "2026-10-28T11:24:46.704Z",
+      "elapsedMs": 1140013,
+      "cameraLocal": {
+        "x": -0.013723345473408699,
+        "y": 0.15171699225902557,
+        "z": -0.09783750027418137
+      },
+      "hitViewer": [
+        0.9796798825263977,
+        0.20056754350662231,
+        4.904155748164385e-9,
+        0,
+        -0.12372640520334244,
+        0.6043463349342346,
+        0.7870560884475708,
+        0,
+        0.15785790979862213,
+        -0.7710630297660828,
+        0.6168814301490784,
+        0,
+        9.373907872145537e-9,
+        -3.520165847703538e-8,
+        -3.138674736022949,
+        1
+      ],
+      "hitLocal": [
+        0.9929609894752502,
+        1.0106462118490228e-17,
+        -0.11844190210103989,
+        0,
+        -2.5025680376192307e-25,
+        1,
+        8.532843151028331e-17,
+        0,
+        0.11844190210103989,
+        -8.47278057413412e-17,
+        0.9929609894752502,
+        0,
+        -0.24304941296577454,
+        -2.318596124649048,
+        -2.0203988552093506,
+        1
+      ],
+      "tilt": 0,
+      "normalColumn": [
+        -2.5025680376192307e-25,
+        1,
+        8.532843151028331e-17
+      ]
+    },
+    {
+      "event": "pose-capture",
+      "at": "2026-10-28T11:25:14.449Z",
+      "elapsedMs": 1167759,
+      "cameraLocal": {
+        "x": 0.3002171814441681,
+        "y": 0.07736542075872421,
+        "z": -1.2177549600601196
+      },
+      "hitViewer": [
+        0.9865360856056213,
+        0.16354386508464813,
+        1.1134575483850995e-9,
+        0,
+        -0.04252525418996811,
+        0.25652259588241577,
+        0.9656022787094116,
+        0,
+        0.15791833400726318,
+        -0.952601432800293,
+        0.2600235342979431,
+        0,
+        -9.567421521694541e-9,
+        8.83844037957715e-8,
+        -1.5629545450210571,
+        1
+      ],
+      "hitLocal": [
+        0.9967564344406128,
+        6.866987093257994e-18,
+        -0.08047709614038467,
+        0,
+        -2.90345561256181e-24,
+        1,
+        8.532843151028331e-17,
+        0,
+        0.08047709614038467,
+        -8.505166349476797e-17,
+        0.9967564344406128,
+        0,
+        0.26751089096069336,
+        -1.4318270683288574,
+        -1.6228418350219727,
+        1
+      ],
+      "tilt": 0,
+      "normalColumn": [
+        -2.90345561256181e-24,
+        1,
+        8.532843151028331e-17
+      ]
+    },
+    {
+      "event": "session-end",
+      "at": "2026-10-28T11:25:25.776Z",
+      "elapsedMs": 1179085
+    }
+  ]
+}

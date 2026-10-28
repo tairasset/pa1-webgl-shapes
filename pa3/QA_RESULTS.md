@@ -1,6 +1,6 @@
 # Development verification
 
-Updated 28 October 2026. These results describe software checks on a computer, not real-device AR experiments.
+Updated 28 October 2026. Development checks and the subsequently supplied real-device evidence are distinguished below. A finalized document does not mean every assignment requirement is met.
 
 ## Automated checks
 
@@ -35,14 +35,20 @@ On 28 October, the updated local page was reloaded and rechecked in the in-app b
 
 ## Document inspection
 
-The updated English draft contains 954 counted words including table/diagram text, below the 1,200-word limit; E6 separately passes the 150-word guard. Its three rendered pages, all six pages of the updated Russian defence guide and all six pages of the new Android field guide were visually inspected. The documents use black headings, a charcoal table header and neutral backgrounds; there is no blue report theme. The Android video storyboard stays on one page.
+The final writeup.pdf has seven pages: three text/data pages and four screenshot pages. Its content counter is 1,126 words including tables and captions; PDF extraction including all page footers gives 1,183 tokens separated by whitespace, still below 1,200. E6 has 106 words. DEFENSE_FINAL_RU.pdf has four pages. Every rendered page of both final PDFs was visually inspected after the last edit: text, matrix tables, screenshots, captions and footers fit without clipping. Black serif headings, charcoal tables and neutral backgrounds are used.
+
+The older 954-word pre-device draft and six-page preparation guides are historical materials, superseded for delivery by the final report and final defence guide.
 
 ## Supplied-course-material audit
 
 All three supplied PDF chapters (5, 6, 7) and their corresponding slide decks were consulted for the relevant implementation topics. The traceability table and exact page/slide locators are in LECTURE_AUDIT_RU.md. Ch. 7 PDF pp. 9–11 and slide 9 group the critical tasks differently; the write-up now identifies the PDF's three tasks explicitly and preserves the application's explicit local-space selection. The actual pinned WebXRManager.js source was inspected because PA3 E2(c) requires it. No new external web research was used for this audit. Previous external reference links were replaced with supplied-course references except for that mandatory source inspection.
 
-The E3 report now reads a separate placement_hit_matrix from a successful placement event and prints its numeric position as well as normal/tilt. Paired same-hit E1 matrices remain separate. All physical-result fields are still empty. Application JavaScript/HTML were unchanged in this documentation audit, so previously passed 28 application tests and browser checks were not relabelled as a new device run.
+The E3 report uses a separate placement_hit_matrix from a successful placement and prints numeric position and normal/tilt. Paired same-hit E1 matrices remain separate. Actual matrices and camera poses are now populated from user exports; physical scale and centimetre drift remain null. Application JavaScript/HTML were unchanged during finalization. Their SHA-256 hashes match the published checkout, preserving the version used for field data. The previously passed 28 application tests and desktop browser checks are not presented as newly performed hardware experiments.
 
-## Outstanding device checks
+## Supplied device evidence and remaining limits
 
-No accepted AR-capable device was available. Actual AR permission flow, sensor tracking, DOM-overlay behaviour in immersion, green/red device screenshots, tracking recovery, physical scale, return drift, anchors on/off comparison and full start/place/clear/stop/restart console behaviour are not verified on hardware. There is no demo.mp4. A desktop screenshot or simulated result must not be used as evidence for those checks.
+The user supplied 38 screenshot attachments (30 unique original files by SHA-256) and four exports (54 unique events, with export-2 included in export-3). They establish actual AR sessions, placements, anchor creation, Clear, session end, green/red states and photos of both anchor modes. Same-session capture displacement is 1.165462 m; first tracked camera pose to final capture is 1.279138 m. Recalculation of the stored placement and red matrices gives 0 and 180 degrees respectively, matching the logs.
+
+Export-3 provides new-session hit timing of 8.6658 s for the label Patterned and a 20 s timeout for Plain white. Manual repeated hits at 0.0883/0.0366 s are excluded from new-session timing. Material/time matching for the patterned trial and a third timed material are not established. Photos of two modes do not establish centimetre drift. Physical height, device identity, controlled tilted-board testing and absence of device console errors remain unverified. No demo.mp4 was supplied. The user explicitly requested finalization without further filming; no invented evidence is substituted. See FINAL_EVIDENCE_REVIEW_RU.md and SUBMISSION_LIMITATIONS.txt.
+
+Nine structural validation tests were rerun successfully during finalization. The validator correctly rejects this actual dataset as incomplete. The package script stays strict by default; the explicit AllowIncompleteEvidence mode includes the limitations notice while retaining commit-history and deadline checks.

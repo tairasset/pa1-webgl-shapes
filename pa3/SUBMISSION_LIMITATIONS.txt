@@ -1,0 +1,41 @@
+PA3 242458 - FINALIZED FROM THE EVIDENCE SUPPLIED
+28 October 2026 - Tair Asset
+
+This package contains the application and a finalized report with explicit
+limitations. It is not a claim that every PA3 requirement has been completed.
+
+No demo.mp4 was supplied. No slideshow or fabricated recording is substituted.
+The assignment requires a continuous 45-90 second device screen recording.
+Without it, B, D and E are capped at 50% unless the specified lab arrangement
+was agreed. The final grade is for the instructor to determine.
+
+Not measured or not verified:
+- Physical speaker height and height error in centimetres (E5).
+- Centimetre drift and independently verified 3 m return routes for both modes.
+- A third distinct, timed surface trial (E4).
+- A controlled tilted-board test and the 12-degree boundary on hardware.
+- Actual device model and OS version; the browser user-agent is retained.
+- Absence of device console errors throughout the complete session cycle.
+- The in-class explanation and live code change.
+
+What the supplied evidence establishes:
+- Actual AR sessions, placements, anchor creation, Clear and session end.
+- Two same-session pose captures: estimated displacement 1.165 m between
+  captures; 1.279 m from the first tracked camera pose to the last capture.
+- Paired viewer/local hit matrices and one successful placement matrix.
+- Green 0-degree and red 180-degree states. The red captured normal points down;
+  it does not establish the physical inclination of a book or board.
+- Photos of both anchors-on and anchors-off modes near a paper reference.
+  The observer reported no visible movement, without a mode-specific cm reading.
+- A new-session trial labelled Patterned found a hit in 8.666 seconds.
+  A new-session Plain white trial produced no hit within 20 seconds.
+
+Export-2 is a prefix of export-3; it is not an independent repeated experiment.
+Later manual hits at 0.088 and 0.037 seconds are excluded from new-session timing.
+Screenshot order is not an independently verified timestamp.
+
+PA3 also explicitly prohibits generative AI in assessed code and write-ups.
+Technical verification and this package do not waive that course rule.
+
+Source branch: pa3-ar-speaker
+HTTPS page: https://tairasset.github.io/pa1-webgl-shapes/

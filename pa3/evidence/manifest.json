@@ -1,0 +1,128 @@
+{
+  "selected_images": [
+    {
+      "file": "green.png",
+      "attachment_number": 1,
+      "original_name": "codex-clipboard-f3e9cd83-7876-46e7-97a8-92f533d64099.png",
+      "preserved_file": "shot-01.png",
+      "sha256": "9626d74ae7bac9f68e92780120c05c666b0e97f904750d286206966c990fcb23",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "red-180.png",
+      "attachment_number": 6,
+      "original_name": "codex-clipboard-ce8fc3a4-bd58-439d-912d-9a8709b1e753.png",
+      "preserved_file": "shot-06.png",
+      "sha256": "ff8a7162479dd2e36334e230e6540de67101cb0892e46065ada0792e3e97c5ba",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "anchors-on-view-1.png",
+      "attachment_number": 27,
+      "original_name": "codex-clipboard-b168d6f6-e2ae-4090-aa99-c12e034fddf4.png",
+      "preserved_file": "shot-27.png",
+      "sha256": "08f78205bcb433a3d9708dc4698c513d84013249ed3820fc4bc120b91b213425",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "anchors-on-view-2.png",
+      "attachment_number": 28,
+      "original_name": "codex-clipboard-cd2de060-74e7-430f-b7ed-de9b2462c279.png",
+      "preserved_file": "shot-28.png",
+      "sha256": "062aaaed918998276b74e6d138c69c732e93052bae78f787cd35ce512ff2980f",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "anchors-off-view-1.png",
+      "attachment_number": 30,
+      "original_name": "codex-clipboard-4327c509-4fd7-456b-8456-4768074ca3b4.png",
+      "preserved_file": "shot-30.png",
+      "sha256": "d9a69f13f8e71f453b0f8769624069387ce7760a3b7ea2b1790fe1318feb7fb1",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "anchors-off-view-2.png",
+      "attachment_number": 31,
+      "original_name": "codex-clipboard-266e6187-6688-4939-b2ea-c80732f32ed5.png",
+      "preserved_file": "shot-31.png",
+      "sha256": "129b18f0206aa78be9f6a875935d32b6863958998a091050cb9e6b01e3e8fe3c",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "white-table.png",
+      "attachment_number": 38,
+      "original_name": "codex-clipboard-688f0694-0fc2-4d5e-8b58-6e263bb79f23.png",
+      "preserved_file": "shot-38.png",
+      "sha256": "c9af760578e0942ebcbf7037721254e88e525bfee7569047ef51cb4cbffdf28a",
+      "size": [
+        1080,
+        2400
+      ]
+    },
+    {
+      "file": "laptop-lid.png",
+      "attachment_number": 8,
+      "original_name": "codex-clipboard-d964fb94-07fc-427f-8033-575c18ed5c73.png",
+      "preserved_file": "shot-08.png",
+      "sha256": "61ba207a214b317a68883b20d9408671331ed8b2b421cf51f72acb178a54ab3e",
+      "size": [
+        1080,
+        2400
+      ]
+    }
+  ],
+  "exports": [
+    {
+      "original_name": "PA3_242458_evidence.json",
+      "preserved_file": "export-0.json",
+      "exportedAt": "2026-10-28T10:59:55.959Z",
+      "sha256": "76bb1de94d7d903cfd0f033a04fc01eb32da80151fa5bc114fb0b94ed2b73dfb",
+      "events": 12
+    },
+    {
+      "original_name": "PA3_242458_evidence (1).json",
+      "preserved_file": "export-1.json",
+      "exportedAt": "2026-10-28T11:25:33.362Z",
+      "sha256": "a6d40eeb1cdf11f41e7d4624b784b5eb8a7a695d3030cd50f145a46b7e1db1c6",
+      "events": 15
+    },
+    {
+      "original_name": "PA3_242458_evidence (2).json",
+      "preserved_file": "export-2.json",
+      "exportedAt": "2026-10-28T11:46:29.258Z",
+      "sha256": "8eb19c1f1b1e97680aefb8be36bd9dbb52679a99f78ef3ab696656a6abcce21c",
+      "events": 14
+    },
+    {
+      "original_name": "PA3_242458_evidence (3).json",
+      "preserved_file": "export-3.json",
+      "exportedAt": "2026-10-28T11:52:07.422Z",
+      "sha256": "67e83c1cc92c585f4c3bcc9e79e150d78e36221fdf4c6a80d343abf1b0798af7",
+      "events": 27
+    }
+  ],
+  "limits": [
+    "Attachment order is not an independently verified screenshot timestamp",
+    "User reported no noticeable movement; no mode-specific centimetre measurements",
+    "No video was supplied; no more recording is possible",
+    "No physical height measurement or confirmed device model supplied"
+  ]
+}

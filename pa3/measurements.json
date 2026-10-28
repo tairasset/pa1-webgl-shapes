@@ -3,17 +3,130 @@
   "device_model": null,
   "os_version": null,
   "browser_version": null,
-  "camera_start_local": null,
-  "camera_after_1m_local": null,
-  "hit_viewer_matrix": null,
-  "hit_local_matrix": null,
-  "placement_hit_matrix": null,
+  "camera_start_local": {
+    "x": -0.006014999933540821,
+    "y": 0.07398021221160889,
+    "z": 0.02418084815144539
+  },
+  "camera_after_1m_local": {
+    "x": 0.3002171814441681,
+    "y": 0.07736542075872421,
+    "z": -1.2177549600601196
+  },
+  "hit_viewer_matrix": [
+    0.9796798825263977,
+    0.20056754350662231,
+    4.904155748164385e-09,
+    0,
+    -0.12372640520334244,
+    0.6043463349342346,
+    0.7870560884475708,
+    0,
+    0.15785790979862213,
+    -0.7710630297660828,
+    0.6168814301490784,
+    0,
+    9.373907872145537e-09,
+    -3.520165847703538e-08,
+    -3.138674736022949,
+    1
+  ],
+  "hit_local_matrix": [
+    0.9929609894752502,
+    1.0106462118490228e-17,
+    -0.11844190210103989,
+    0,
+    -2.5025680376192307e-25,
+    1,
+    8.532843151028331e-17,
+    0,
+    0.11844190210103989,
+    -8.47278057413412e-17,
+    0.9929609894752502,
+    0,
+    -0.24304941296577454,
+    -2.318596124649048,
+    -2.0203988552093506,
+    1
+  ],
+  "placement_hit_matrix": [
+    0.9978188872337341,
+    5.632623515453288e-18,
+    -0.06601110100746155,
+    0,
+    -2.328276123143569e-25,
+    1,
+    8.532843151028331e-17,
+    0,
+    0.06601110100746155,
+    -8.514231587245888e-17,
+    0.9978188872337341,
+    0,
+    0.0014643669128417969,
+    -0.5845087766647339,
+    -1.1177139282226562,
+    1
+  ],
   "drift_anchors_on_cm": null,
   "drift_anchors_off_cm": null,
   "surface_trials": [],
   "observed_height_cm": null,
   "scale_reference": null,
-  "retailer_observations": [],
-  "screenshots": {},
-  "tracking_notes": null
+  "retailer_observations": [
+    "The trial labelled plain white produced no hit within the 20-second window. Add visible scan guidance and a retry action.",
+    "The user could not reliably repeat red on a tilted object; a captured hit instead had a downward normal and 180-degree tilt. Explain uncertain surface orientation and offer a rescan."
+  ],
+  "screenshots": {
+    "green": "evidence/green.png",
+    "red_180": "evidence/red-180.png",
+    "drift_on": "evidence/anchors-on-view-2.png",
+    "drift_off": "evidence/anchors-off-view-2.png"
+  },
+  "tracking_notes": "Actual sessions and anchor creation recorded. Two screenshot modes exist. Reported no noticeable shift is qualitative and not assigned to a specific mode. Tilted-board boundary, physical height, centimetre drift and device console were not verified.",
+  "camera_before_walk_local": {
+    "x": -0.013723345473408699,
+    "y": 0.15171699225902557,
+    "z": -0.09783750027418137
+  },
+  "rejected_hit_matrix": [
+    -0.7111316323280334,
+    -5.999092320082861e-17,
+    0.7030590176582336,
+    0,
+    1.9503765466248087e-24,
+    -1.0000001192092896,
+    -8.532843151028331e-17,
+    0,
+    0.7030590176582336,
+    -6.067973965795867e-17,
+    0.7111315131187439,
+    0,
+    -0.3975514769554138,
+    -0.02621018886566162,
+    -0.1001632809638977,
+    1
+  ],
+  "estimated_displacement_between_captures_m": 1.1654621089332928,
+  "estimated_displacement_from_session_start_m": 1.2791380536386097,
+  "finalization_status": "Finalized from supplied evidence; required evidence remains incomplete",
+  "evidence_sources": {
+    "E1": "export-1.json: second session, two pose-capture events",
+    "E3_placement": "export-0.json: first placement",
+    "E3_red": "export-0.json: pose-capture",
+    "E4": "export-3.json: session-start trials; manual repeated hits are not cold starts"
+  },
+  "unverified_surface_trials": [
+    {
+      "surface_label": "Patterned surface",
+      "seconds": 8.665799999982118,
+      "success": true,
+      "method": "new session; actual material unconfirmed"
+    },
+    {
+      "surface_label": "Plain white surface",
+      "seconds": 20,
+      "success": false,
+      "method": "new session; no hit within window"
+    }
+  ]
 }

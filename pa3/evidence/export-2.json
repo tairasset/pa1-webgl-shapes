@@ -1,0 +1,186 @@
+{
+  "studentId": "242458",
+  "variant": {
+    "product": 8,
+    "mode": "single",
+    "tolerance": 12,
+    "facesUser": true
+  },
+  "threeVersion": "0.186.1",
+  "exportedAt": "2026-10-28T11:46:29.258Z",
+  "events": [
+    {
+      "event": "surface-trial-start",
+      "at": "2026-10-28T11:45:38.165Z",
+      "elapsedMs": 6270,
+      "surface": "Patterned surface",
+      "method": "first frame after source ready"
+    },
+    {
+      "event": "session-start",
+      "at": "2026-10-28T11:45:38.168Z",
+      "elapsedMs": 6272,
+      "studentId": "242458",
+      "variant": {
+        "product": 8,
+        "mode": "single",
+        "tolerance": 12,
+        "facesUser": true
+      },
+      "threeVersion": "0.186.1",
+      "requestedAnchors": true,
+      "enabledFeatures": [
+        "local",
+        "viewer",
+        "hit-test",
+        "dom-overlay",
+        "anchors"
+      ],
+      "anchorsOn": true,
+      "domOverlay": "screen",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36"
+    },
+    {
+      "event": "camera-at-session-start",
+      "at": "2026-10-28T11:45:41.170Z",
+      "elapsedMs": 9274,
+      "position": {
+        "x": -0.004258898086845875,
+        "y": 0.07987122237682343,
+        "z": 0.022085003554821014,
+        "w": 1
+      }
+    },
+    {
+      "event": "surface-trial-first-hit",
+      "at": "2026-10-28T11:45:46.831Z",
+      "elapsedMs": 14935,
+      "surface": "Patterned surface",
+      "seconds": 8.665799999982118,
+      "success": true,
+      "tilt": 0,
+      "valid": true
+    },
+    {
+      "event": "tracking-reacquired",
+      "at": "2026-10-28T11:45:46.832Z",
+      "elapsedMs": 14936
+    },
+    {
+      "event": "placement",
+      "at": "2026-10-28T11:45:47.031Z",
+      "elapsedMs": 15135,
+      "matrix": [
+        0.9994170069694519,
+        2.9132060403198805e-18,
+        -0.03414113074541092,
+        0,
+        3.283440641491135e-24,
+        1,
+        8.532843812772821e-17,
+        0,
+        0.03414113074541092,
+        -8.527869479441172e-17,
+        0.9994170069694519,
+        0,
+        -0.015778973698616028,
+        -0.23648419976234436,
+        -0.5592678785324097,
+        1
+      ],
+      "position": [
+        -0.015778973698616028,
+        -0.23648419976234436,
+        -0.5592678785324097
+      ],
+      "normal": [
+        3.283440641491135e-24,
+        1,
+        8.532843812772821e-17
+      ],
+      "tilt": 0,
+      "yaw": 0.03414776706842391,
+      "anchorsOn": true,
+      "productCount": 1
+    },
+    {
+      "event": "anchor-created",
+      "at": "2026-10-28T11:45:47.142Z",
+      "elapsedMs": 15246
+    },
+    {
+      "event": "placement",
+      "at": "2026-10-28T11:45:48.819Z",
+      "elapsedMs": 16924,
+      "matrix": [
+        0.9999702572822571,
+        -6.578690454750346e-19,
+        0.007709844037890434,
+        0,
+        -1.8888924626639227e-26,
+        1,
+        8.532845136261801e-17,
+        0,
+        -0.007709844037890434,
+        -8.532591026377625e-17,
+        0.9999702572822571,
+        0,
+        0.007366239558905363,
+        -0.22926664352416992,
+        -0.5772279500961304,
+        1
+      ],
+      "position": [
+        0.007366239558905363,
+        -0.22926664352416992,
+        -0.5772279500961304
+      ],
+      "normal": [
+        -1.8888924626639227e-26,
+        1,
+        8.532845136261801e-17
+      ],
+      "tilt": 0,
+      "yaw": -0.007709919508373286,
+      "anchorsOn": true,
+      "productCount": 1
+    },
+    {
+      "event": "anchor-created",
+      "at": "2026-10-28T11:45:49.156Z",
+      "elapsedMs": 17260
+    },
+    {
+      "event": "clear",
+      "at": "2026-10-28T11:45:51.272Z",
+      "elapsedMs": 19376
+    },
+    {
+      "event": "clear",
+      "at": "2026-10-28T11:46:01.410Z",
+      "elapsedMs": 29514
+    },
+    {
+      "event": "surface-trial-start",
+      "at": "2026-10-28T11:46:11.526Z",
+      "elapsedMs": 39630,
+      "surface": "Patterned surface",
+      "method": "manual trial"
+    },
+    {
+      "event": "surface-trial-first-hit",
+      "at": "2026-10-28T11:46:11.614Z",
+      "elapsedMs": 39718,
+      "surface": "Patterned surface",
+      "seconds": 0.08830000001192093,
+      "success": true,
+      "tilt": 0,
+      "valid": true
+    },
+    {
+      "event": "session-end",
+      "at": "2026-10-28T11:46:26.262Z",
+      "elapsedMs": 54366
+    }
+  ]
+}

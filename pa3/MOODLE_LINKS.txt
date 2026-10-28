@@ -1,0 +1,6 @@
+GitHub repository: https://github.com/tairasset/pa1-webgl-shapes
+PA3 source branch and folder: https://github.com/tairasset/pa1-webgl-shapes/tree/pa3-ar-speaker/pa3
+HTTPS application: https://tairasset.github.io/pa1-webgl-shapes/
+
+The report documents the supplied measurements and their limitations.
+No continuous device demo video is included.
