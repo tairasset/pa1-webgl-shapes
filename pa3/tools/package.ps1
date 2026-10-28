@@ -16,11 +16,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) { $pythonPath = (Get-Command pyth
 & $pythonPath (Join-Path $PSScriptRoot 'validate_measurements.py')
 if ($LASTEXITCODE -ne 0) {
     if (-not $AllowIncompleteEvidence) { throw 'Complete and verify real field evidence before packaging.' }
-    Write-Warning 'Available-evidence package: required measurements are incomplete. Read SUBMISSION_LIMITATIONS.txt.'
-}
-if ($AllowIncompleteEvidence) {
-    if (-not (Test-Path -LiteralPath (Join-Path $projectRoot 'SUBMISSION_LIMITATIONS.txt'))) { throw 'An incomplete package must include SUBMISSION_LIMITATIONS.txt.' }
-    $requiredFiles += 'SUBMISSION_LIMITATIONS.txt'
+    Write-Warning 'Available-evidence package: required measurements are incomplete. Read the limitations in writeup.pdf.'
 }
 if ($DefenseKit) {
     $requiredFiles += @('.gitattributes','DEFENSE_FINAL_RU.pdf','DEFENSE_FINAL_RU.md','MOODLE_LINKS.txt',
