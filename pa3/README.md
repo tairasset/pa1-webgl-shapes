@@ -4,6 +4,8 @@ Tair Asset · AIB-2401 · Student ID 242458
 
 The application previews a one-metre floor speaker on a real surface. It uses Three.js **0.186.1**, a hand-written WebXR session lifecycle and native hit testing. Open `index.html` through a server, not by double-clicking the file.
 
+Live HTTPS preview: **https://tairasset.github.io/pa1-webgl-shapes/**. The site is published from `gh-pages`; the complete PA3 project and its history are in `pa3-ar-speaker`. Desktop/iPhone preview is not an accepted device demo.
+
 ## Personal variant
 
 Read 2458 from the right: **8, 5, 4, 2**.
@@ -51,6 +53,10 @@ START AR requests `requiredFeatures: ['hit-test']`, normally with `optionalFeatu
 
 `select` on `renderer.xr.getController(0)` only sets a flag. The next XR frame validates tracking and the current hit, then performs placement. A rejected request is consumed immediately; it cannot unexpectedly place later. Missing or emulated viewer position hides the reticle and blocks placement.
 
+`visibilitychange` also handles interruptions that do not produce animation frames. Hidden or blurred sessions immediately hide spatial content, discard pending placement/capture requests and pause interaction without querying poses. Returning to visible enters `recovering`: the first fresh, non-emulated viewer pose and hit display a new reticle; placement requires a subsequent tap. Existing anchors are retained during a pause. Interrupted surface trials are logged as interrupted, never as search latency. STOP uses the same input reset; if it fails, the session must reacquire tracking before placement resumes. End/visibility callbacks and asynchronous reference-space results from an old session cannot mutate a newer session.
+
+Live-check changes to SETTINGS update the displayed threshold, placement mode, count limit and facing rule after reload. The product remains the speaker assigned to 242458.
+
 Capture pose records the camera in local space and the same hit in viewer and local spaces, including the 16 matrix elements, normal column and tilt. Download evidence JSON after leaving AR. Coordinates remain on the device until the user downloads/shares them. Camera frames are neither requested as raw images nor uploaded.
 
 Choose the E4 surface **before START AR**. A fresh session automatically measures from source readiness to its first hit, with a 20-second timeout. Record at least three fresh-session trials per surface. The overlay timing controls are for explicit additional trials; do not present already-tracked repeated hits as cold-start measurements. The desktop labels are also available after ending the session.
@@ -89,11 +95,13 @@ Three.js performs the GL compatibility, XR render-layer setup and XR reference/a
 
 Optional development dependencies are pinned in `package.json`. After `npm install`, run `npm test`. The suite uses real Three.js geometry and simulated XR frames. Simulations exercise tilt boundaries, four facing directions, tracking loss, emulated position, rejected taps, single-mode replacement, anchor deletion, pending asynchronous cleanup, source cancellation and restart. They are not device experiment results.
 
+The current suite has 28 application tests. Run `python tools/test_measurements.py` for eight additional structural evidence-validation checks. The validator rejects empty device fields, invalid coordinates/matrices, non-finite measurements, repeated surface names and missing/outside-project screenshot paths. It checks data structure, not the authenticity of a measurement or screenshot. The final package and report builder both use it. The report builder enforces 1,200 words including tables/diagram labels and the separate 150-word E6 limit.
+
 Before submission complete `measurements.json` using real observations, add the required screenshots and record `demo.mp4` on the AR device. `writeup_pre_device.pdf` is a technical draft with explicitly unmeasured results. It is not a completed field report. Use `tools/build_reports.py` to rebuild once evidence is available; use `tools/package.ps1` only after the final report/video and commit-history requirements are met.
 
 ## Submission state
 
-The working branch is `pa3-ar-speaker`. PA3 work started on 27 October 2026. The requirement for five meaningful commits across two different days is not satisfied by commits on one day. Make a genuine device-testing/finalisation commit on 28 October before **22:00 Asia/Qyzylorda (Astana time)**; do not change commit dates. The submission ZIP must correspond to the last on-time commit and contain `index.html`, `index.js`, `README.md`, `writeup.pdf` and `demo.mp4` at its root. Add the repository link in Moodle. The course document explicitly prohibits AI-generated code/write-ups; check with the instructor before using this work as assessed individual submission.
+The working branch is `pa3-ar-speaker`. PA3 development spans 27 and 28 October 2026: the second day's substantive change adds session-interruption recovery and the associated regression checks. Verify the actual history with `git log --format="%h %cI %s" -- pa3`; do not change commit dates. The deadline is **28 October 2026, 22:00 Asia/Qyzylorda (Astana time)**. The final ZIP must correspond to the last on-time commit and contain `index.html`, `index.js`, `README.md`, `writeup.pdf` and `demo.mp4` at its root. The preparation ZIP is not that complete submission. Add the repository link in Moodle. The course document explicitly prohibits AI-generated code/write-ups; check with the instructor before using this work as assessed individual submission.
 
 ## Sources
 

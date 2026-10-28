@@ -60,6 +60,7 @@ let xrSession = null, localSpace = null, viewerSpace = null, hitTestSource = nul
 let placeRequested = false, captureRequested = false, tracked = false;
 let anchorsOn = false, lastAngle = null, sessionState = 'idle';
 let generation = 0, currentHit = null, surfaceTrial = null, firstPoseLogged = false;
+let sessionListeners = null, awaitingFreshHit = false, interactionNotice = null;
 let previewRenderer, previewScene, previewCamera, previewProduct, previewTime = 0;
 let rotating = false;
 const placed = [], evidence = [];
@@ -73,15 +74,34 @@ function record(type, data = {}) {
   $('log').textContent = evidence.slice(-14).map(e => JSON.stringify(e)).join('\n');
 }
 function message(text) { $('fallback').hidden = !text; $('fallback').textContent = text; }
+function sessionVisible(session = xrSession) { return (session?.visibilityState || 'visible') === 'visible'; }
+function syncVariantLabels() {
+  const mode = SETTINGS.mode === 'single' ? 'Single' : `Multi up to ${SETTINGS.capacity}`;
+  const facing = SETTINGS.facesUser ? (SETTINGS.faceAway ? 'Faces away from user' : 'Faces user') : 'Keeps hit orientation';
+  $('variant-header').textContent = `PA3 · Floor speaker · ${mode} · ${SETTINGS.tolerance}° · ${facing}`;
+  $('variant-overlay').textContent = `${mode} placement · tolerance ${SETTINGS.tolerance}° · ${facing.toLowerCase()}`;
+  $('surface-help').textContent = `Move slowly in a well-lit area. A green ring means the surface is within ${SETTINGS.tolerance}° of horizontal. Red means too tilted.`;
+  $('placement-help').textContent = `${facing}. ${SETTINGS.mode === 'single' ? 'Tap again to move the same speaker.' : `Place up to ${SETTINGS.capacity} speakers; another tap replaces the oldest.`} Its size stays fixed.`;
+}
 function setStatus() {
+  syncVariantLabels();
   $('session-status').textContent = sessionState;
-  $('tracking-status').textContent = tracked ? 'normal' : 'waiting / lost';
-  $('reticle-status').textContent = !reticle?.visible ? 'none' : `${acceptsTilt(lastAngle) ? 'valid' : 'too tilted'} ${lastAngle.toFixed(1)}°`;
+  $('tracking-status').textContent = sessionState === 'paused' ? 'paused' : (tracked ? 'normal' : 'waiting / lost');
+  $('reticle-status').textContent = !reticle?.visible || !Number.isFinite(lastAngle) ? 'none' : `${acceptsTilt(lastAngle) ? 'valid' : 'too tilted'} ${lastAngle.toFixed(1)}°`;
   $('reticle-status').style.color = reticle?.visible ? (acceptsTilt(lastAngle) ? '#9fe6a5' : '#ffb4a5') : '#fff';
   $('anchors-status').textContent = anchorsOn ? 'on' : 'off';
   $('count-status').textContent = `${placed.length} / ${SETTINGS.mode === 'single' ? 1 : SETTINGS.capacity}`;
   $('overlay-status').textContent = xrSession?.domOverlayState ? 'on' : 'off';
+  $('clear').disabled = !xrSession || sessionState === 'starting' || sessionState === 'stopping';
+  $('capture').disabled = sessionState !== 'running' || !tracked;
+  $('xr-surface-test').disabled = sessionState !== 'running' || !sessionVisible();
+  if (sessionState === 'paused') $('tracking-message').textContent = 'AR paused — return from the system interface to continue';
+  else if (xrSession && !tracked) $('tracking-message').textContent = 'Tracking lost — move the phone slowly';
+  else if (awaitingFreshHit) $('tracking-message').textContent = 'Find a surface again before placing';
+  else if (interactionNotice && performance.now() < interactionNotice.until) $('tracking-message').textContent = interactionNotice.text;
+  else $('tracking-message').textContent = xrSession ? 'Aim at a surface. Tap outside this panel to place.' : '';
 }
+function notify(text) { interactionNotice = { text, until: performance.now() + 3500 }; setStatus(); }
 function lights(target) {
   target.add(new THREE.HemisphereLight(0xfff4dc, 0x4c5550, 2.5));
   const sun = new THREE.DirectionalLight(0xffffff, 3);
@@ -113,6 +133,7 @@ function loadScene() {
   $('export').addEventListener('click', downloadEvidence);
   $('surface-test').addEventListener('click', () => startSurfaceTrial($('surface').value));
   $('xr-surface-test').addEventListener('click', () => startSurfaceTrial($('xr-surface').value));
+  setStatus();
   renderer.setAnimationLoop(render);
 }
 function loadPreview() {
@@ -145,35 +166,46 @@ async function onRequestSession() {
   if (xrSession || sessionState === 'starting') return;
   sessionState = 'starting'; $('start').disabled = true; $('start').textContent = 'Starting…';
   const optionalFeatures = $('request-anchors').checked ? ['anchors', 'dom-overlay'] : ['dom-overlay'];
+  const requestGeneration = generation;
+  let requestedSession = null;
   try {
     // Called directly from the button gesture; no ARButton helper.
-    const session = await navigator.xr.requestSession('immersive-ar', {
+    requestedSession = await navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: ['hit-test'], optionalFeatures, domOverlay: { root: $('overlay') }
     });
-    await onSessionStarted(session);
+    await onSessionStarted(requestedSession);
   } catch (error) {
+    // A late rejection from an old session must not end a newer session.
+    if (requestedSession && xrSession !== requestedSession) return;
+    if (!requestedSession && generation !== requestGeneration) return;
     record('session-error', { name: error.name, message: error.message });
-    if (xrSession) { try { await xrSession.end(); } catch { /* Already ended by the system. */ } }
-    onSessionEnd(); message(`AR could not start: ${error.message}. Check camera permission, ARCore and HTTPS.`);
+    if (xrSession === requestedSession && requestedSession) { try { await requestedSession.end(); } catch { /* Already ended by the system. */ } }
+    if (!xrSession || xrSession === requestedSession) { onSessionEnd(); message(`AR could not start: ${error.message}. Check camera permission, ARCore and HTTPS.`); }
   }
 }
 async function onSessionStarted(session) {
   xrSession = session; const token = ++generation;
-  session.addEventListener('end', onSessionEnd, { once: true });
+  sessionState = 'starting'; awaitingFreshHit = false; interactionNotice = null;
+  const onEnd = () => onSessionEnd(session);
+  const onVisibility = () => onVisibilityChange(session);
+  sessionListeners = { session, onEnd, onVisibility };
+  session.addEventListener('end', onEnd, { once: true });
+  session.addEventListener('visibilitychange', onVisibility);
   anchorsOn = Array.from(session.enabledFeatures || []).includes('anchors');
   renderer.xr.setReferenceSpaceType('local');
   await renderer.xr.setSession(session);
   if (token !== generation || xrSession !== session) return;
   localSpace = renderer.xr.getReferenceSpace();
-  viewerSpace = await session.requestReferenceSpace('viewer');
+  const newViewerSpace = await session.requestReferenceSpace('viewer');
   if (token !== generation || xrSession !== session) return;
+  viewerSpace = newViewerSpace;
   // Exactly one request per session, outside the render loop.
   const source = await session.requestHitTestSource({ space: viewerSpace });
   if (token !== generation || xrSession !== session) { cancelSource(source); return; }
-  hitTestSource = source; sessionState = 'running'; firstPoseLogged = false;
+  hitTestSource = source; sessionState = sessionVisible(session) ? 'running' : 'paused'; firstPoseLogged = false;
+  awaitingFreshHit = !sessionVisible(session);
   // E4 timing begins when hit testing is ready, before the first processed frame.
-  surfaceTrial = { surface: $('surface').value, started: performance.now() };
-  record('surface-trial-start', { surface: surfaceTrial.surface, method: 'first frame after source ready' });
+  if (sessionVisible(session)) startSurfaceTrial($('surface').value, 'first frame after source ready');
   document.body.classList.add('xr-active'); $('start').textContent = 'AR running';
   $('request-anchors').disabled = true;
   record('session-start', { ...identity, requestedAnchors: $('request-anchors').checked,
@@ -183,21 +215,43 @@ async function onSessionStarted(session) {
   animate(); setStatus();
 }
 function animate() { renderer.setAnimationLoop(render); }
-function startSurfaceTrial(surface) {
-  if (!xrSession) { message('Start an AR session before timing a surface trial.'); return; }
+function hideSpatialContent() {
+  tracked = false; currentHit = null; lastAngle = null; reticle.visible = false;
+  placeRequested = false; captureRequested = false;
+  for (const entry of placed) entry.object.visible = false;
+}
+function onVisibilityChange(session) {
+  if (session !== xrSession || sessionState === 'stopping') return;
+  hideSpatialContent(); awaitingFreshHit = true;
+  if (sessionState !== 'starting') sessionState = sessionVisible(session) ? 'recovering' : 'paused';
+  if (surfaceTrial) {
+    record('surface-trial-interrupted', { surface: surfaceTrial.surface, reason: 'session visibility changed', observedSeconds: (performance.now() - surfaceTrial.started) / 1000 });
+    surfaceTrial = null;
+  }
+  record('session-visibility', { visibility: session.visibilityState || 'visible', state: sessionState });
+  setStatus();
+}
+function startSurfaceTrial(surface, method = 'manual trial') {
+  if (!xrSession || sessionState !== 'running' || !sessionVisible()) { message('Start or resume an AR session before timing a surface trial.'); return; }
+  if (surfaceTrial) record('surface-trial-interrupted', { surface: surfaceTrial.surface, reason: 'replaced by a new trial' });
   surfaceTrial = { surface, started: performance.now() };
-  record('surface-trial-start', { surface });
+  record('surface-trial-start', { surface, method });
 }
 function render(time, frame) {
   if (frame && xrSession && localSpace) {
     currentHit = null; reticle.visible = false; lastAngle = null;
+    if (!sessionVisible() || sessionState === 'stopping') {
+      if (!sessionVisible() && sessionState !== 'paused' && sessionState !== 'starting') onVisibilityChange(xrSession);
+      hideSpatialContent(); setStatus(); renderer.render(scene, camera); return;
+    }
+    if (sessionState === 'paused') onVisibilityChange(xrSession);
     const viewerPose = frame.getViewerPose(localSpace);
     tracked = !!viewerPose && !viewerPose.emulatedPosition;
-    $('tracking-message').textContent = tracked ? 'Aim at a surface. Tap outside this panel to place.' : 'Tracking lost — move the phone slowly';
+    if (!tracked && sessionState !== 'starting') { awaitingFreshHit = true; sessionState = 'recovering'; }
     if (surfaceTrial && performance.now() - surfaceTrial.started >= 20000) {
       record('surface-trial-timeout', { surface: surfaceTrial.surface, seconds: 20, success: false }); surfaceTrial = null;
     }
-    if (tracked && hitTestSource && sessionState === 'running') {
+    if (tracked && hitTestSource && (sessionState === 'running' || sessionState === 'recovering')) {
       if (!firstPoseLogged) { record('camera-at-session-start', { position: viewerPose.transform.position.toJSON?.() || vectorJSON(viewerPose.transform.position) }); firstPoseLogged = true; }
       const hits = frame.getHitTestResults(hitTestSource);
       if (hits.length) {
@@ -207,10 +261,15 @@ function render(time, frame) {
           reticle.matrixWorldNeedsUpdate = true; lastAngle = tiltDegrees(pose.transform.matrix);
           reticle.material.color.setHex(acceptsTilt(lastAngle) ? 0x4ee26c : 0xf34e39); reticle.visible = true;
           if (surfaceTrial) {
-            record('surface-trial-first-hit', { surface: surfaceTrial.surface, seconds: (performance.now() - surfaceTrial.started) / 1000, tilt: lastAngle, valid: acceptsTilt(lastAngle) });
+            record('surface-trial-first-hit', { surface: surfaceTrial.surface, seconds: (performance.now() - surfaceTrial.started) / 1000, success: true, tilt: lastAngle, valid: acceptsTilt(lastAngle) });
             surfaceTrial = null;
           }
         }
+      }
+      if (awaitingFreshHit) {
+        // Show a newly acquired reticle before accepting a fresh user tap.
+        placeRequested = false; captureRequested = false;
+        if (currentHit) { awaitingFreshHit = false; sessionState = 'running'; record('tracking-reacquired'); }
       }
       if (captureRequested) {
         record('pose-capture', { cameraLocal: vectorJSON(viewerPose.transform.position),
@@ -272,7 +331,7 @@ function placeProduct(hit, viewerPose) {
 function anchorFailed(entry, error) {
   // A failed anchor must not look like a successfully anchored product.
   removeEntry(entry); record('anchor-failed', { name: error.name, message: error.message });
-  $('tracking-message').textContent = 'Anchor could not be created. Scan slowly and tap again.';
+  notify('Anchor could not be created. Scan slowly and tap again.');
 }
 function removeEntry(entry) {
   entry.alive = false;
@@ -286,18 +345,32 @@ function clearProducts() {
 }
 async function endXRSession() {
   if (!xrSession || sessionState === 'stopping') return;
-  sessionState = 'stopping'; setStatus();
-  try { await xrSession.end(); }
-  catch (error) { sessionState = 'running'; record('stop-failed', { message: error.message }); setStatus(); }
+  const session = xrSession;
+  sessionState = 'stopping'; awaitingFreshHit = true; hideSpatialContent(); setStatus();
+  try { await session.end(); }
+  catch (error) {
+    if (xrSession !== session) return;
+    sessionState = sessionVisible(session) ? 'recovering' : 'paused';
+    record('stop-failed', { message: error.message });
+    notify('Could not stop AR. Try STOP again or use the system back gesture.');
+  }
   // The shared 'end' event performs cleanup for STOP and the system exit.
 }
-function onSessionEnd() {
+function onSessionEnd(endedSession = xrSession) {
+  if (endedSession && endedSession !== xrSession) return;
+  if (!xrSession && sessionState === 'idle') return;
   generation++;
+  if (sessionListeners) {
+    const { session, onEnd, onVisibility } = sessionListeners;
+    session.removeEventListener?.('end', onEnd);
+    session.removeEventListener?.('visibilitychange', onVisibility);
+    sessionListeners = null;
+  }
   if (hitTestSource) { cancelSource(hitTestSource); hitTestSource = null; }
   if (surfaceTrial) { record('surface-trial-ended-without-hit', { surface: surfaceTrial.surface, observedSeconds: (performance.now() - surfaceTrial.started) / 1000 }); surfaceTrial = null; }
   clearProducts(); xrSession = null; localSpace = null; viewerSpace = null;
   tracked = false; anchorsOn = false; currentHit = null; lastAngle = null;
-  captureRequested = false; reticle.visible = false; sessionState = 'idle';
+  captureRequested = false; reticle.visible = false; sessionState = 'idle'; awaitingFreshHit = false; interactionNotice = null;
   document.body.classList.remove('xr-active'); $('start').disabled = false; $('start').textContent = 'START AR';
   $('request-anchors').disabled = false; record('session-end'); setStatus(); animate();
 }

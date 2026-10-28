@@ -1,10 +1,10 @@
 # Development verification
 
-27 October 2026. These results describe software checks on a computer, not real-device AR experiments.
+Updated 28 October 2026. These results describe software checks on a computer, not real-device AR experiments.
 
 ## Automated checks
 
-Twelve tests passed against the pinned Three.js 0.186.1 geometry and the actual application functions with simulated XRFrame input:
+Twenty-eight application tests passed against pinned Three.js 0.186.1 geometry and the actual application functions with simulated XRFrame input. The first twelve cover:
 
 - ID-derived variant and malformed-ID rejection.
 - Surface tilt from a normalised Y column, including exact threshold and downward normals.
@@ -19,6 +19,10 @@ Twelve tests passed against the pinned Three.js 0.186.1 geometry and the actual 
 - An already-invalidated source cannot interrupt state cleanup.
 - Multi mode retains five placements and removes the oldest on the sixth.
 
+Sixteen additional scenarios cover immediate pause without animation frames; avoiding viewer/hit/anchor queries while blurred or hidden; fresh-pose/hit/tap recovery; ordinary tracking-loss recovery; interrupted surface timing; starting behind system UI; stale session events; delayed reference-space results; missing anchor poses; persistent anchor-failure messages; dynamic variant labels; yaw-only placement on a tilted surface; keep-hit orientation; default feature negotiation; denied permissions; and failed STOP recovery.
+
+Eight Python tests passed for evidence validation: valid structural shapes (including zero drift), empty data, blank device/non-finite measurements, booleans masquerading as measurements, repeated surface names, malformed matrices, outside-project screenshot paths, and success/failure timing rules. These tests use explicitly synthetic fixtures and never populate measurements.json.
+
 The Node VM test warning about experimental module support concerns the development harness; the browser application uses native ES modules.
 
 ## Browser inspection
@@ -27,9 +31,11 @@ The page loaded from a local HTTP server in the Codex in-app browser. Three.js l
 
 The desktop view and a 390 × 844 viewport were inspected visually. No overlapping text or horizontal overflow was visible. The temporary viewport override was then reset.
 
+On 28 October, the updated local page was reloaded and rechecked in the in-app browser (reported Chrome 156.0.0.0 on Windows). Rotate worked, the diagnostic panel expanded, and attempting a surface trial without AR showed a visible explanation. Download evidence JSON produced student ID 242458, version 0.186.1 and zero events, as expected with no AR session. Empty events were not relabelled as device evidence. The warn/error log was empty during those checks. Both 390 × 844 and 1280 × 900 viewport overrides were inspected; document scroll width equalled client width in each case, so no horizontal overflow was detected. The viewport override was reset. These are local browser checks; publication is verified separately.
+
 ## Document inspection
 
-The English draft contains approximately 803 counted prose words before table/diagram labels, below the 1,200-word limit. Its three rendered pages and all five pages of the Russian guide were visually inspected. The documents use black headings, a charcoal table header and neutral backgrounds; there is no blue report theme.
+The English draft contains 868 counted words including table/diagram text, below the 1,200-word limit; E6 separately passes the 150-word guard. Its three rendered pages and all six pages of the updated Russian guide were visually inspected. The documents use black headings, a charcoal table header and neutral backgrounds; there is no blue report theme.
 
 ## Outstanding device checks
 

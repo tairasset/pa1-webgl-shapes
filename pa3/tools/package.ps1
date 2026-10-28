@@ -7,12 +7,17 @@ foreach ($requiredFile in $requiredFiles) {
         throw "Missing $requiredFile. The preparation draft is not a complete submission."
     }
 }
-$measurements = Get-Content -LiteralPath (Join-Path $projectRoot 'measurements.json') -Raw | ConvertFrom-Json
-if (-not $measurements.device_model -or -not $measurements.browser_version) { throw 'Real device details are required.' }
-$gitExe = Get-Command git -ErrorAction Stop
+$bundledRoot = Join-Path $env:USERPROFILE '.cache\codex-runtimes\codex-primary-runtime\dependencies'
+$pythonPath = Join-Path $bundledRoot 'python\python.exe'
+if (-not (Test-Path -LiteralPath $pythonPath)) { $pythonPath = (Get-Command python -ErrorAction Stop).Source }
+& $pythonPath (Join-Path $PSScriptRoot 'validate_measurements.py')
+if ($LASTEXITCODE -ne 0) { throw 'Complete and verify real field evidence before packaging.' }
+$gitPath = Join-Path $bundledRoot 'native\git\cmd\git.exe'
+if (-not (Test-Path -LiteralPath $gitPath)) { $gitPath = (Get-Command git -ErrorAction Stop).Source }
+$gitExe = @{Source=$gitPath}
 $dirty = & $gitExe.Source -C $repoRoot status --porcelain -- pa3
 if ($dirty) { throw 'Commit the final PA3 files before packaging.' }
-$commitRows = @(& $gitExe.Source -C $repoRoot log --format='%h|%aI' -- pa3)
+$commitRows = @(& $gitExe.Source -C $repoRoot log --format='%h|%cI' -- pa3)
 $days = @($commitRows | ForEach-Object { ($_ -split '\|')[1].Substring(0,10) } | Sort-Object -Unique)
 if ($commitRows.Count -lt 5 -or $days.Count -lt 2) { throw 'PA3 needs at least 5 meaningful commits on at least 2 actual days. Do not backdate commits.' }
 $headDate = [DateTimeOffset]::Parse((& $gitExe.Source -C $repoRoot log -1 --format='%cI'))
