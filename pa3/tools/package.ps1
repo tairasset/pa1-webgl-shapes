@@ -44,6 +44,6 @@ $outputName = if ($DefenseKit) { 'PA3_242458_Asset_defense_kit.zip' } else { 'PA
 $outputFile = Join-Path (Split-Path $repoRoot -Parent) $outputName
 if (Test-Path -LiteralPath $outputFile) { throw "Archive already exists: $outputFile. Rename it before creating a new archive." }
 # Archive committed files directly; this avoids a ZIP that differs from the commit.
-& $gitExe.Source -C $repoRoot archive --format=zip --output=$outputFile 'HEAD:pa3' @requiredFiles
+& $gitExe.Source -c core.autocrlf=false -C $repoRoot archive --format=zip --output=$outputFile 'HEAD:pa3' @requiredFiles
 if ($LASTEXITCODE -ne 0) { throw 'Git archive failed.' }
 Write-Output "Created $outputFile from committed PA3 files."
