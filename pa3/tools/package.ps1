@@ -1,4 +1,4 @@
-param([switch]$AllowIncompleteEvidence, [switch]$DefenseKit)
+param([switch]$AllowIncompleteEvidence)
 $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $repoRoot = (Resolve-Path (Join-Path $projectRoot '..')).Path
@@ -18,13 +18,6 @@ if ($LASTEXITCODE -ne 0) {
     if (-not $AllowIncompleteEvidence) { throw 'Complete and verify real field evidence before packaging.' }
     Write-Warning 'Available-evidence package: required measurements are incomplete. Read the limitations in writeup.pdf.'
 }
-if ($DefenseKit) {
-    $requiredFiles += @('.gitattributes','DEFENSE_FINAL_RU.pdf','DEFENSE_FINAL_RU.md','MOODLE_LINKS.txt',
-        'measurements.json','final_report_stats.json','FINAL_EVIDENCE_REVIEW_RU.md',
-        'QA_RESULTS.md','LECTURE_AUDIT_RU.md','evidence','tests','package.json',
-        'tools/build_final_reports.py','tools/build_reports.py','tools/validate_measurements.py',
-        'tools/test_measurements.py','tools/package.ps1')
-}
 $gitPath = Join-Path $bundledRoot 'native\git\cmd\git.exe'
 if (-not (Test-Path -LiteralPath $gitPath)) { $gitPath = (Get-Command git -ErrorAction Stop).Source }
 $gitExe = @{Source=$gitPath}
@@ -36,7 +29,7 @@ if ($commitRows.Count -lt 5 -or $days.Count -lt 2) { throw 'PA3 needs at least 5
 $headDate = [DateTimeOffset]::Parse((& $gitExe.Source -C $repoRoot log -1 --format='%cI'))
 $deadline = [DateTimeOffset]::Parse('2026-10-28T22:00:00+05:00')
 if ($headDate -gt $deadline) { throw 'HEAD is after the deadline; select and verify the last on-time commit.' }
-$outputName = if ($DefenseKit) { 'PA3_242458_Asset_defense_kit.zip' } else { 'PA3_242458_Asset.zip' }
+$outputName = 'PA3_242458_Asset.zip'
 $outputFile = Join-Path (Split-Path $repoRoot -Parent) $outputName
 if (Test-Path -LiteralPath $outputFile) { throw "Archive already exists: $outputFile. Rename it before creating a new archive." }
 # Archive committed files directly; this avoids a ZIP that differs from the commit.

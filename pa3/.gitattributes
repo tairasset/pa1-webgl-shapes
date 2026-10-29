@@ -7,6 +7,5 @@
 *.py text eol=lf
 *.ps1 text eol=lf
 measurements.json text eol=lf
-final_report_stats.json text eol=lf
 evidence/export-*.json -text
 evidence/manifest.json text eol=lf
