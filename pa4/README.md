@@ -2,6 +2,10 @@
 
 Tair Asset / AIB-2401 / student ID 242458.
 
+Source: https://github.com/tairasset/pa1-webgl-shapes/tree/pa4-science-lab/pa4
+
+Live scene: https://tairasset.github.io/pa1-webgl-shapes/pa4/
+
 Variant: x2458-; science lab (8), pulse (5 % 3 = 2), gaze fuse 1.5 seconds (4 % 2 = 0), six exhibits on a 4 m ring (2 % 2 = 0).
 
 ## Run
@@ -21,3 +25,10 @@ x2458-motion: typed configuration, base transforms, phase-continuous period chan
 
 ## Sources
 Supplied PA4 assignment; supplied Baruah Chapter 8 PDF and its 17-slide presentation. A-Frame 1.8.0 source is inspected where E4 requires it. Experiment results and completion status are recorded separately; no measurements are inferred from code alone.
+
+## Verified observations
+Seventeen runtime checks passed in Chrome 156 on this laptop's Intel UHD graphics. Over three-second samples at 1440 x 900: six exhibits 59.67 FPS / 20 calls / 15,316 triangles; 66 exhibits 48 FPS / 380 calls / 250,518 triangles; instanced 66 exhibits 55.02 FPS / 77 calls / 254,578 triangles. The write-up includes the original captures and explanations; these are measurements, not guaranteed rates.
+
+The official Immersive Web Emulator 2.0 was tested in a separate profile: immersive-vr was supported, renderer.xr.isPresenting became true, and the gaze dwell selected an exhibit. Enable the emulator for the site before loading the scene. If the emulator initializes after A-Frame, reload once after it is ready. Ordinary fullscreen is not proof of an XR session. demo.mp4 is a 77.8-second continuous automated browser recording; desktop movement uses actual keyboard input and selection uses the real fuse timer. The VR segment uses the emulator's virtual head pose. No physical-headset test is claimed.
+
+The write-up contains 1,135 words including captions and page footers; E6 contains 120 words. Three supplied textures are 512 x 512. No unprefixed custom component, community add-on, model file or synthetic device measurement is included. Preparation notes and test-browser profiles stay outside this project.
