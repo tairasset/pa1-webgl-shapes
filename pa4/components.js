@@ -4,7 +4,8 @@
   const T = AFRAME.THREE;
   const MOTION = 'x2458-motion', EXHIBIT = 'x2458-exhibit', TEXTURE = 'x2458-texture';
   const log = (el, method, detail = {}) => {
-    const row = { method, entity: el.id, ms: Number(performance.now().toFixed(2)), ...detail };
+    // A-Frame reuses oldData; retain the observation, not its mutable reference.
+    const row = { method, entity: el.id, ms: Number(performance.now().toFixed(2)), ...structuredClone(detail) };
     console.info('[242458 lifecycle]', JSON.stringify(row));
     const system = el.sceneEl?.systems['x2458-gallery'];
     if (system) { system.journal.push(row); if (system.journal.length > 2500) system.journal.shift(); }
