@@ -1,0 +1,23 @@
+# FIELD / 2458 - PA4 science laboratory
+
+Tair Asset / AIB-2401 / student ID 242458.
+
+Variant: x2458-; science lab (8), pulse (5 % 3 = 2), gaze fuse 1.5 seconds (4 % 2 = 0), six exhibits on a 4 m ring (2 % 2 = 0).
+
+## Run
+Serve this folder: `python -m http.server 8768 --bind 127.0.0.1`, then open http://localhost:8768/. Internet is needed for the pinned core A-Frame 1.8.0 and the default text font. No community components, add-ons or model files are used. components.js follows A-Frame in the head.
+
+## Controls
+WASD: desktop movement. Drag the mouse: look. Hold the centre gaze ring on an exhibit for 1.5 seconds: select; repeat to deselect. M: pause/resume exhibit motion. X: remove selected exhibit. Enter VR: headset or Immersive Web Emulator; the gaze ring follows the head. WASD is removed in VR to avoid smooth artificial locomotion. Show/hide stats displays actual performance. Download lifecycle log exports timestamped events.
+
+## Textures and licences
+All three 512 x 512 PNG images in textures/ are original procedural patterns authored for this project, dedicated under CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/. No third-party image is incorporated. floor-grid.png: laboratory floor tiles, repeated 16 x 16. brushed-alloy.png: brushed panel. ceramic.png: pedestal ceramic. Generation provenance is retained outside the submission.
+
+## Components
+x2458-motion: typed configuration, base transforms, phase-continuous period changes and decaying offsets for amplitude/type updates; local time freezes while paused. x2458-texture: configuration-only schema, safe mesh attachment, source-specific loading, owned texture/material cleanup and original material restoration. x2458-exhibit: events-map hover, gaze click, selection panel, motion changes through setAttribute. x2458-gallery: registration, single selection, M/X, live counts and experiment helpers.
+
+## Experiment helpers
+`PA4.gallery().addStress(60)` adds real exhibit entities; `clearStress()` removes them. `PA4.measure(5)` returns measured requestAnimationFrame FPS and renderer counters, including the renderer and browser context in the evidence record. `PA4.gallery().setBatchMode(true)` groups compatible meshes into Three.js InstancedMesh objects; false restores original meshes. This optimization is for the E5 comparison; normal interaction tests use unbatched objects. `PA4.filter('chapter'|'defaults'|'chosen')` reproduces the supplied Chapter 8 filter settings or applies the comparison settings. The intentionally misspelled chapter maxFilter exists only in that explicit experiment.
+
+## Sources
+Supplied PA4 assignment; supplied Baruah Chapter 8 PDF and its 17-slide presentation. A-Frame 1.8.0 source is inspected where E4 requires it. Experiment results and completion status are recorded separately; no measurements are inferred from code alone.
