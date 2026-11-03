@@ -156,7 +156,11 @@
       this.panel.setAttribute('visible', false); this.el.appendChild(this.panel);
       // Cursor events on primitive children do not bubble by default.
       // Capture them and route the interaction through this exhibit's events map.
-      this.forwardChild = event => { if (event.target !== this.el) this.el.emit(event.type, event.detail, false); };
+      this.forwardChild = event => {
+        if (event.target === this.el) return;
+        event.stopPropagation();
+        this.el.emit(event.type, event.detail, false);
+      };
       ['mouseenter', 'mouseleave', 'click'].forEach(name => this.el.addEventListener(name, this.forwardChild, true));
       this.gallery.register(this.el);
     },
