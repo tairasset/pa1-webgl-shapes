@@ -20,7 +20,7 @@
     init: function () {
       this.basePosition = this.el.object3D.position.clone();
       this.baseScale = this.el.object3D.scale.clone();
-      this.angle = 0; this.elapsed = 0; this.running = false; this.firstTick = true;
+      this.angle = 0; this.elapsed = 0; this.running = false; this.firstTick = true; this.skipDelta = false;
       this.positionOffset = new T.Vector3(); this.scaleOffset = new T.Vector3();
       this.targetPosition = new T.Vector3(); this.targetScale = new T.Vector3();
       log(this.el, 'init');
@@ -46,7 +46,8 @@
     },
     tick: function (time, timeDelta) {
       if (!this.running || this.el.sceneEl.systems['x2458-gallery']?.motionPaused) return;
-      const dt = Math.max(0, Math.min(timeDelta || 0, 100)) / 1000;
+      const dt = this.skipDelta ? 0 : Math.max(0, Math.min(timeDelta || 0, 100)) / 1000;
+      this.skipDelta = false;
       this.angle = (this.angle + dt * Math.PI * 2 / Math.max(0.05, this.data.period)) % (Math.PI * 2);
       this.elapsed += dt; this.target();
       const decay = Math.exp(-dt * 8);
@@ -59,7 +60,7 @@
       }
     },
     pause: function () { this.running = false; log(this.el, 'pause'); },
-    play: function () { this.running = true; log(this.el, 'play'); },
+    play: function () { this.running = true; this.skipDelta = true; log(this.el, 'play'); },
     remove: function () {
       this.el.object3D.position.copy(this.basePosition); this.el.object3D.scale.copy(this.baseScale);
       log(this.el, 'remove');
@@ -153,6 +154,10 @@
       this.panel.setAttribute('position', '0 1.65 0');
       this.panel.setAttribute('text', { value: `${this.data.name}\n${this.data.info}`, align: 'center', width: 2.1, color: '#fff3d7', wrapCount: 32 });
       this.panel.setAttribute('visible', false); this.el.appendChild(this.panel);
+      // Cursor events on primitive children do not bubble by default.
+      // Capture them and route the interaction through this exhibit's events map.
+      this.forwardChild = event => { if (event.target !== this.el) this.el.emit(event.type, event.detail, false); };
+      ['mouseenter', 'mouseleave', 'click'].forEach(name => this.el.addEventListener(name, this.forwardChild, true));
       this.gallery.register(this.el);
     },
     events: {
@@ -169,6 +174,7 @@
       this.el.setAttribute(MOTION, 'amplitude', value ? this.defaultAmplitude * 2 : this.defaultAmplitude);
     },
     remove: function () {
+      ['mouseenter', 'mouseleave', 'click'].forEach(name => this.el.removeEventListener(name, this.forwardChild, true));
       this.gallery.unregister(this.el);
       this.panel?.remove();
     }
@@ -318,6 +324,8 @@
     const scene = document.querySelector('a-scene');
     const ready = () => {
       lab.gallery().updatePanel(); document.querySelector('#loading').hidden = true;
+      // Depth testing alone does not guarantee a cursor draws after opaque world meshes.
+      document.querySelector('#gaze').getObject3D('mesh').renderOrder = 10000;
       document.querySelector('#enter-vr').onclick = () => scene.enterVR().catch(e => { document.querySelector('#notice').textContent = e.message; });
       document.querySelector('#save-log').onclick = lab.downloadLog;
       document.querySelector('#toggle-stats').onclick = () => scene.hasAttribute('stats') ? scene.removeAttribute('stats') : scene.setAttribute('stats', '');
