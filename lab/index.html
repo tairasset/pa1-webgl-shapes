@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="beta/beta.css">
+  <style>
+    .modes { margin: 16px 0 24px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mode { color: var(--text); text-decoration: none; }
+    .mode article { height: 100%; }
+    .mode:hover, .mode:focus-visible { border-color: var(--green); background: #283529; }
+    .mode strong { color: var(--green); margin-top: auto; }
+    @media (max-width: 810px) { .modes { grid-template-columns: 1fr; } }
+  </style>
+  <title>Field Lab · Choose a mode</title>
+</head>
+<body>
+  <header class="top"><span class="brand">⟐ FIELD LAB</span><span class="badge">THREE MODES</span></header>
+  <main>
+    <section class="intro">
+      <div>
+        <p class="eyebrow">FIELD STATION</p>
+        <h1>Choose<br>a mode</h1>
+        <p class="lede">Explore the science lab, visit the desert station, or test equipment in the arena.</p>
+      </div>
+    </section>
+    <nav class="stations modes" aria-label="Choose a mode">
+      <a class="mode" href="../pa4/" aria-label="Main mode — science lab">
+        <article><p class="label">01 · MAIN MODE</p><h2>Science lab</h2>
+          <p>Explore six scientific exhibits, select by gaze, and try the pause and removal controls.</p>
+          <strong>Enter the lab →</strong></article>
+      </a>
+      <a class="mode" href="main/index.html" aria-label="Desert field station">
+        <article><p class="label">02 · EXHIBITION</p><h2>Desert station</h2>
+          <p>Explore six outdoor exhibits with a view of the mountains.</p>
+          <strong>Enter the field station →</strong></article>
+      </a>
+      <a class="mode" href="beta/index.html" aria-label="Beta — workshop and 3D arena">
+        <article><p class="label">03 · GAME BETA</p><h2>Workshop and arena</h2>
+          <p>Build weapons and gadgets in a workshop inspired by Abduali Bayeshov’s published research, then test your loadout in a first-person arena.</p>
+          <strong>Play the beta →</strong></article>
+      </a>
+    </nav>
+  </main>
+</body>
+</html>

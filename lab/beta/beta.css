@@ -1,0 +1,91 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  --base: #131915;
+  --panel: #1b251e;
+  --line: #374638;
+  --text: #f5efdb;
+  --muted: #b5c0ac;
+  --copper: #ecab79;
+  --green: #cbe18f;
+}
+* { box-sizing: border-box; }
+[hidden], .symbols { display: none !important; }
+body { margin: 0; background: var(--base); color: var(--text); }
+.top, main, footer { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 26px; border-bottom: 1px solid var(--line); }
+.brand { color: var(--text); font-size: .86rem; font-weight: 750; letter-spacing: .08em; text-decoration: none; }
+.brand-mark { color: var(--copper); margin-right: 8px; font-size: 1.2rem; }
+.badge, .eyebrow, .label { color: var(--copper); font-size: .73rem; font-weight: 700; letter-spacing: .13em; }
+.badge { padding: 7px 10px; border: 1px solid #6d523f; }
+.modes { display: flex; gap: 8px; margin-block: 22px; }
+button { border: 1px solid var(--line); background: #26352a; color: var(--text); border-radius: 5px; padding: 11px 15px; font: inherit; font-weight: 650; cursor: pointer; }
+button:hover:not(:disabled) { background: #354b38; }
+button:disabled { opacity: .57; cursor: default; }
+button:focus-visible, a:focus-visible, canvas:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.modes button[aria-pressed="true"] { border-color: var(--green); color: var(--green); }
+.modes span, h2 span { margin-right: 8px; color: var(--copper); font-family: ui-monospace, monospace; }
+.intro { display: grid; grid-template-columns: 1.4fr 1fr; align-items: end; gap: 28px; padding: clamp(24px, 6vw, 58px); border: 1px solid var(--line); background: radial-gradient(ellipse at 90% 0%, #31402a, transparent 65%), var(--panel); }
+.eyebrow, .label { margin: 0 0 12px; }
+h1 { font-size: clamp(3rem, 8vw, 6.3rem); line-height: .94; letter-spacing: -.065em; margin: 0; }
+.lede { margin: 20px 0 0; max-width: 33ch; font-size: 1.15rem; }
+p { line-height: 1.55; }
+.stock { border: 1px solid var(--line); padding: 3px 16px; background: #131b14; }
+.stock > div { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 10px; min-height: 44px; }
+.stock > div + div { border-top: 1px solid var(--line); }
+.stock strong { font-family: ui-monospace, monospace; color: var(--green); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--copper); }
+.dot.charge { background: var(--green); }
+.dot.gear { background: #cbd8d0; }
+h2 { margin: 30px 0 12px; font-size: 1.25rem; }
+h3 { margin: 0; font-size: 1.18rem; }
+.stations, .recipes { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.recipes { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+article { display: flex; flex-direction: column; align-items: flex-start; padding: 17px; border: 1px solid var(--line); background: var(--panel); }
+article > p:not(.label) { margin: 8px 0 13px; color: var(--muted); }
+article a { color: var(--copper); margin: auto 0 13px; font-size: .88rem; }
+article button { margin-top: auto; width: 100%; text-align: left; }
+article button span { float: right; color: var(--green); }
+.recipe-icon { width: 65px; height: 41px; margin: 0 0 9px; color: var(--copper); fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
+@media (prefers-reduced-motion: no-preference) {
+  .recipe-icon { animation: turn-item 7s linear infinite; }
+  @keyframes turn-item {
+    to { transform: perspective(180px) rotateY(1turn); }
+  }
+}
+.recipe .cost { display: block; color: var(--green); font-size: .83rem; margin: auto 0 12px; }
+.launch, .arena-head, .arena-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 20px; align-items: center; margin-top: 16px; }
+.launch { border-block: 1px solid var(--line); padding: 10px 0; }
+.launch p, .arena-actions p { margin: 0; }
+.primary { color: #1a2415; background: var(--green); border-color: var(--green); }
+.primary:hover:not(:disabled) { background: #e2f4af; }
+.note, footer, .keys { font-size: .87rem; color: var(--muted); }
+footer { margin-block: 24px; padding-top: 14px; border-top: 1px solid var(--line); }
+footer span { color: var(--copper); margin-inline: 5px; }
+.arena-head { margin: 0 0 16px; }
+.arena-head h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); }
+.arena-hud { min-height: 42px; padding: 10px 12px; border: 1px solid var(--line); background: var(--panel); color: var(--green); }
+canvas { display: block; width: 100%; height: auto; max-width: 100%; border: 1px solid var(--line); background: #131b14; cursor: crosshair; }
+.arena-screen { position: relative; }
+.crosshair { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 14px; height: 14px; pointer-events: none; }
+.crosshair::before, .crosshair::after { content: ""; position: absolute; inset: 6px 0; background: #fff4d3; box-shadow: 0 0 3px #000; }
+.crosshair::after { transform: rotate(90deg); }
+.workshop-header h1 { font-size: clamp(2rem, 5vw, 3.8rem); }
+#lab-objective { color: var(--green); font-weight: 650; margin: 12px 0 0; }
+.workshop-hud { position: absolute; left: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.workshop-hud span { padding: 5px 9px; background: #131b14ed; border: 1px solid var(--line); font-size: .82rem; }
+.workshop-hud strong { color: var(--green); margin-left: 4px; }
+.arena-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.research { margin-top: 18px; color: var(--muted); }
+.research summary { cursor: pointer; margin-bottom: 10px; }
+#bench h2 { margin: 0; }
+kbd { display: inline-block; margin: 4px 2px 0 8px; padding: 2px 5px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 3px; }
+@media (max-width: 810px) {
+  .recipes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .top, main, footer { width: calc(100% - 26px); }
+  .intro, .stations { grid-template-columns: 1fr; }
+  .brand { font-size: .72rem; }
+  .badge { font-size: .62rem; }
+}
