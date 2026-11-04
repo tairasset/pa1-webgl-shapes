@@ -9,16 +9,16 @@
 </style></head><body>
 <div id="loading">Preparing FIELD / 2458 laboratory...</div>
 <header><div><h1>FIELD / 2458</h1><div class="small">Six studies in motion <span class="badge">/ SCIENCE LAB</span></div></div><div class="identity small">Tair Asset / AIB-2401 / <b>242458</b><br>Selected: <span id="selection">none (0 of 6)</span><br>Pulse / gaze 1.5 s / ring 4 m</div></header>
-<footer><button id="enter-vr">Enter VR</button><button id="save-log">Download lifecycle log</button><button id="toggle-stats">Show / hide stats</button><span class="small">WASD move / mouse look / hold centre ring 1.5 s to select / M pause / X remove</span><span id="notice"></span></footer>
-<a-scene x2458-gallery background="color: #18221f" fog="type: exponential; color: #18221f; density: 0.022" renderer="antialias: true; colorManagement: true" webxr="referenceSpaceType: local-floor" vr-mode-ui="enabled: true" stats>
+<footer><button type="button" id="fullscreen">Fullscreen</button><button id="enter-vr">Enter VR</button><button id="save-log">Download lifecycle log</button><button id="toggle-stats">Show / hide stats</button><span class="small">WASD move / mouse look / hold centre ring 1.5 s to select / M pause / X remove</span><span id="notice" role="status"></span></footer>
+<a-scene x2458-gallery background="color: #18221f" fog="type: exponential; color: #18221f; density: 0.022" renderer="antialias: true; colorManagement: true" webxr="referenceSpaceType: local-floor" xr-mode-ui="enabled: false" stats>
 <a-assets timeout="15000"><img id="floor-img" src="textures/floor-grid.png"><img id="alloy-img" src="textures/brushed-alloy.png"><img id="ceramic-img" src="textures/ceramic.png"></a-assets>
 <a-sky color="#18221f"></a-sky>
 <a-plane id="ground" width="44" height="44" rotation="-90 0 0" material="color: #b8c1b3; roughness: 0.9" x2458-texture="src: #floor-img; repeat: 16 16; anisotropy: 8"></a-plane>
 <a-entity id="rear-panel" geometry="primitive: box; width: 5; height: 3.4; depth: 0.16" position="0 1.7 -7" material="color: #c0c8b9; roughness: 0.75" x2458-texture="src: #alloy-img; repeat: 3 2"></a-entity>
 <a-entity light="type: ambient; color: #e8e6d8; intensity: 1.15"></a-entity>
 <a-entity light="type: directional; color: #ffe5b4; intensity: 2.2" position="-3 7 3"></a-entity>
-<a-entity id="rig" position="0 0 0" wasd-controls="acceleration: 18">
- <a-entity id="camera" camera look-controls="pointerLockEnabled: false" position="0 1.6 0">
+<a-entity id="rig" position="0 0 0">
+ <a-entity id="camera" camera look-controls="pointerLockEnabled: false" wasd-controls="acceleration: 18; fly: false" position="0 1.6 0">
   <a-entity id="gaze" cursor="fuse: true; fuseTimeout: 1500" raycaster="objects: .exhibit; far: 15; interval: 30" position="0 0 -1" geometry="primitive: ring; radiusInner: 0.009; radiusOuter: 0.014" material="color: #ffcf77; shader: flat; depthTest: false; depthWrite: false" animation__fusing="property: scale; startEvents: fusing; dur: 1500; from: 1 1 1; to: 0.3 0.3 0.3" animation__reset="property: scale; startEvents: mouseleave, click; dur: 100; to: 1 1 1"></a-entity>
  </a-entity>
 </a-entity>

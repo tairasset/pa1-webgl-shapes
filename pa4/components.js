@@ -196,11 +196,11 @@
           const el = this.selected; this.select(null); this.unregister(el); el.remove();
         }
       };
-      this.onVR = () => {
-        // Mouse/WASD locomotion is useful on desktop but uncomfortable in a headset.
-        const rig = document.querySelector('#rig');
-        if (this.el.is('vr-mode')) rig.removeAttribute('wasd-controls');
-        else rig.setAttribute('wasd-controls', { acceleration: 18 });
+      this.onVR = event => {
+        const camera = document.querySelector('#camera');
+        // Only a WebXR session suspends desktop locomotion.
+        if (event.type === 'enter-vr' && this.el.xrSession) camera.setAttribute('wasd-controls', 'enabled', false);
+        if (event.type === 'exit-vr') camera.setAttribute('wasd-controls', 'enabled', true);
       };
       window.addEventListener('keydown', this.onKey);
       this.el.addEventListener('enter-vr', this.onVR); this.el.addEventListener('exit-vr', this.onVR);
@@ -331,7 +331,31 @@
       lab.gallery().updatePanel(); document.querySelector('#loading').hidden = true;
       // Depth testing alone does not guarantee a cursor draws after opaque world meshes.
       document.querySelector('#gaze').getObject3D('mesh').renderOrder = 10000;
-      document.querySelector('#enter-vr').onclick = () => scene.enterVR().catch(e => { document.querySelector('#notice').textContent = e.message; });
+      const notice = document.querySelector('#notice');
+      const fullscreen = document.querySelector('#fullscreen');
+      fullscreen.onclick = async () => {
+        fullscreen.blur();
+        notice.textContent = '';
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await document.documentElement.requestFullscreen();
+        } catch {
+          notice.textContent = 'Fullscreen was blocked. Open the page in Chrome and press F11.';
+        }
+      };
+      document.addEventListener('fullscreenchange', () => {
+        fullscreen.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+      });
+      document.querySelector('#enter-vr').onclick = async event => {
+        event.currentTarget.blur();
+        notice.textContent = '';
+        if (!scene.hasWebXR || !scene.checkHeadsetConnected()) {
+          notice.textContent = 'VR requires a headset or Immersive Web Emulator. For desktop play, choose Fullscreen.';
+          return;
+        }
+        try { await scene.enterVR(); }
+        catch (error) { notice.textContent = error.message; }
+      };
       document.querySelector('#save-log').onclick = lab.downloadLog;
       document.querySelector('#toggle-stats').onclick = () => scene.hasAttribute('stats') ? scene.removeAttribute('stats') : scene.setAttribute('stats', '');
     };
