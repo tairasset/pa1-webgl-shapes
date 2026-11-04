@@ -368,15 +368,29 @@
       document.addEventListener('fullscreenchange', () => {
         fullscreen.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
       });
-      document.querySelector('#enter-vr').onclick = async event => {
-        event.currentTarget.blur();
+      const enterVR = document.querySelector('#enter-vr');
+      const cachedHeadsetCheck = scene.checkHeadsetConnected.bind(scene);
+      let immersiveVRSupported = false;
+      // A-Frame's initial check can finish before the browser emulator is installed.
+      scene.checkHeadsetConnected = () => immersiveVRSupported || cachedHeadsetCheck();
+      enterVR.onclick = async () => {
+        if (scene.xrSession) return;
+        enterVR.blur();
+        enterVR.disabled = true;
         notice.textContent = '';
-        if (!scene.hasWebXR || !scene.checkHeadsetConnected()) {
-          notice.textContent = 'VR requires a headset or Immersive Web Emulator. For desktop play, choose Fullscreen.';
-          return;
+        try {
+          immersiveVRSupported = !!(await navigator.xr?.isSessionSupported('immersive-vr'));
+          if (!immersiveVRSupported) {
+            notice.textContent = 'VR requires a headset or Immersive Web Emulator. For desktop play, choose Fullscreen.';
+            return;
+          }
+          scene.hasWebXR = true;
+          await scene.enterVR();
+        } catch (error) {
+          notice.textContent = error.message;
+        } finally {
+          enterVR.disabled = false;
         }
-        try { await scene.enterVR(); }
-        catch (error) { notice.textContent = error.message; }
       };
       document.querySelector('#save-log').onclick = lab.downloadLog;
       document.querySelector('#toggle-stats').onclick = () => scene.hasAttribute('stats') ? scene.removeAttribute('stats') : scene.setAttribute('stats', '');
