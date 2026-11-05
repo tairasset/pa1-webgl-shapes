@@ -82,6 +82,14 @@ canvas { display: block; width: 100%; height: auto; max-width: 100%; border: 1px
 .workshop-action button { flex-shrink: 0; }
 #lab-feedback { margin: 6px 0 0; color: var(--green); font-size: .86rem; }
 .arena-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+#arena-canvas { height: clamp(320px, 52vh, 600px); touch-action: none; }
+#arena-equipment { position: absolute; top: 10px; left: 10px; right: 10px; width: fit-content; max-width: calc(100% - 20px); padding: 9px 11px; border: 1px solid var(--line); background: #131b14ed; border-radius: 6px; }
+.equipment-heading { display: flex; gap: 18px; align-items: center; justify-content: space-between; font-size: .8rem; margin-bottom: 7px; }
+.equipment-heading strong { color: var(--green); }
+.equipment-heading span { color: var(--muted); }
+.equipment-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.equipment-buttons button { padding: 8px 11px; font-size: .8rem; }
+.equipment-buttons button[aria-pressed="true"] { background: #425433; border-color: var(--green); color: var(--green); }
 .research { margin-top: 18px; color: var(--muted); }
 .research summary { cursor: pointer; margin-bottom: 10px; }
 #bench h2 { margin: 0; }

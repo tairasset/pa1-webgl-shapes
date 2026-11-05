@@ -28,9 +28,19 @@
   };
   let arena;
   let workshop;
+  const arenaWeapons = { blaster: 'Blaster', scatter: 'Shotgun', rifle: 'Pulse rifle', marksman: 'Railgun' };
+  let arenaWeapon = 'blaster';
+  function syncArenaWeapon(status) {
+    arenaWeapon = status.weapon;
+    $('arena-equipped').textContent = 'Equipped: ' + arenaWeapons[arenaWeapon];
+    for (const button of document.querySelectorAll('[data-arena-weapon]')) {
+      button.setAttribute('aria-pressed', String(button.dataset.arenaWeapon === arenaWeapon));
+    }
+  }
   function onRoundEnd(result) {
     $('arena-result').textContent = result;
     $('arena-actions').hidden = false;
+    for (const button of document.querySelectorAll('[data-arena-weapon]')) button.disabled = true;
     $('retry').focus();
   }
   const canCraft = item => stock.copper >= item.copper && stock.charge >= item.charge;
@@ -41,12 +51,12 @@
     $('stock-copper').textContent = stock.copper;
     $('stock-charge').textContent = stock.charge;
     $('stock-gear').textContent = gear.size + ' / ' + recipes.length;
-    $('arena-tab').disabled = !hasWeapon();
-    $('start').disabled = !hasWeapon();
+    $('arena-tab').disabled = false;
+    $('start').disabled = false;
     $('lab-objective').textContent = hasWeapon() ? 'Step 4 of 4 · Enter the arena when ready.' :
       made.size === 2 ? 'Step 3 of 4 · Open the workbench and craft a weapon. It equips automatically.' :
       collected ? 'Step 2 of 4 · Make copper powder and power cells at the two stations.' :
-      'Step 1 of 4 · Pick up raw materials from the supply station.';
+      'Craft equipment in the workshop, or enter the arena now. Four weapons are ready.';
     for (const item of recipes) {
       const button = buttons.get(item.id);
       const ready = gear.has(item.id);
@@ -73,12 +83,14 @@
         stock.charge -= item.charge;
         gear.add(item.id);
         loadout.add(item.id);
-        feedback.textContent = 'Crafted and equipped: ' + item.name + '.' + (hasWeapon() ? ' You can now enter the arena.' : '');
+        if (arenaWeapons[item.id]) arenaWeapon = item.id;
+        feedback.textContent = 'Crafted and equipped: ' + item.name + '.';
       } else if (loadout.delete(item.id)) {
         feedback.textContent = item.name + ' stays in the workshop.';
       } else {
         loadout.add(item.id);
-        feedback.textContent = item.name + ' is in your loadout.' + (hasWeapon() ? ' The arena is open.' : '');
+        if (arenaWeapons[item.id]) arenaWeapon = item.id;
+        feedback.textContent = item.name + ' is in your loadout.';
       }
       updateLab();
     });
@@ -118,8 +130,7 @@
         feedback.textContent = 'Click Craft & equip once. Your equipment is ready to use in the arena.';
         break;
       case 'arena':
-        if (hasWeapon()) startArena();
-        else feedback.textContent = 'Open the workbench and click Craft & equip on a weapon.';
+        startArena();
         break;
     }
     updateLab();
@@ -143,12 +154,11 @@
   }
 
   function startArena() {
-    if (!hasWeapon()) return;
     if (!arena) {
       try {
         arena = window.createArena($('arena-canvas'), $('arena-hud'), onRoundEnd, () => {
           $('briefing').hidden = true;
-        });
+        }, { onStatus: syncArenaWeapon });
       } catch (error) {
         feedback.textContent = 'The 3D arena could not start. Check your internet connection and enable hardware acceleration in your browser.';
         console.error(error);
@@ -164,8 +174,11 @@
     workshop?.stop();
     $('lab-tab').setAttribute('aria-pressed', 'false');
     $('arena-tab').setAttribute('aria-pressed', 'true');
-    window.scrollTo(0, 0);
-    arena.start([...loadout]);
+    for (const button of document.querySelectorAll('[data-arena-weapon]')) button.disabled = false;
+    const chosenWeapon = arenaWeapon;
+    arena.start([...new Set([...Object.keys(arenaWeapons), ...loadout])]);
+    arena.equip(chosenWeapon);
+    $('arena').scrollIntoView({ block: 'start' });
   }
 
   $('lab-tab').addEventListener('click', showLab);
@@ -175,6 +188,12 @@
   });
   $('start').addEventListener('click', startArena);
   $('retry').addEventListener('click', startArena);
+  for (const button of document.querySelectorAll('[data-arena-weapon]')) {
+    button.addEventListener('click', () => {
+      arena?.equip(button.dataset.arenaWeapon);
+      $('arena-canvas').focus({ preventScroll: true });
+    });
+  }
   $('begin-round').addEventListener('click', () => {
     $('arena-canvas').focus({ preventScroll: true });
     arena?.beginRound();
@@ -208,4 +227,5 @@
     feedback.textContent = 'The workshop could not load. Open it in Chrome and check your internet connection and hardware acceleration.';
     console.error(error);
   }
+  if (new URLSearchParams(window.location.search).get('mode') === 'arena') startArena();
 })();
