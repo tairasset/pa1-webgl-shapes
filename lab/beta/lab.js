@@ -22,6 +22,10 @@
     bench: 'Workbench · open recipes',
     arena: 'Exit · enter the arena'
   };
+  const stationActions = {
+    supply: 'Collect materials [E]', copper: 'Make powder [E]', charge: 'Make cells [E]',
+    bench: 'Open workbench [E]', arena: 'Enter arena [E]'
+  };
   let arena;
   let workshop;
   function onRoundEnd(result) {
@@ -33,13 +37,14 @@
   const hasWeapon = () => loadout.has('blaster') || loadout.has('scatter');
 
   function updateLab() {
+    $('stock-raw').textContent = supplies.copper + supplies.charge;
     $('stock-copper').textContent = stock.copper;
     $('stock-charge').textContent = stock.charge;
     $('stock-gear').textContent = gear.size + ' / ' + recipes.length;
     $('arena-tab').disabled = !hasWeapon();
     $('start').disabled = !hasWeapon();
     $('lab-objective').textContent = hasWeapon() ? 'Step 4 of 4 · Enter the arena when ready.' :
-      made.size === 2 ? 'Step 3 of 4 · Craft a weapon at the workbench and take it.' :
+      made.size === 2 ? 'Step 3 of 4 · Open the workbench and craft a weapon. It equips automatically.' :
       collected ? 'Step 2 of 4 · Make copper powder and power cells at the two stations.' :
       'Step 1 of 4 · Pick up raw materials from the supply station.';
     for (const item of recipes) {
@@ -47,7 +52,7 @@
       const ready = gear.has(item.id);
       const carried = loadout.has(item.id);
       button.disabled = !ready && !canCraft(item);
-      button.textContent = carried ? 'Leave' : ready ? 'Take' : 'Craft';
+      button.textContent = carried ? 'Put back' : ready ? 'Take' : 'Craft & equip';
       button.setAttribute('aria-label', button.textContent + ': ' + item.name);
     }
   }
@@ -67,7 +72,8 @@
         stock.copper -= item.copper;
         stock.charge -= item.charge;
         gear.add(item.id);
-        feedback.textContent = 'Crafted: ' + item.name + '. Press Take to bring it into the arena.';
+        loadout.add(item.id);
+        feedback.textContent = 'Crafted and equipped: ' + item.name + '.' + (hasWeapon() ? ' You can now enter the arena.' : '');
       } else if (loadout.delete(item.id)) {
         feedback.textContent = item.name + ' stays in the workshop.';
       } else {
@@ -81,8 +87,9 @@
   }
 
   function showTarget(id) {
-    $('station-prompt').textContent = stationLabels[id] || 'Walk up to a station and aim at it.';
+    $('station-prompt').textContent = stationLabels[id] || 'Walk closer to a station or click it.';
     $('station-action').disabled = !stationLabels[id];
+    $('station-action').textContent = stationActions[id] || 'Use station';
   }
 
   function interactWithStation(id) {
@@ -91,7 +98,7 @@
         collected = true;
         supplies.copper += 2;
         supplies.charge += 3;
-        feedback.textContent = 'Raw materials collected. Find the copper and power cell stations.';
+        feedback.textContent = 'Collected +2 copper batches and +3 power batches. Copper station: left. Power cells: right.';
         break;
       case 'copper':
       case 'charge':
@@ -108,11 +115,11 @@
         $('bench').hidden = false;
         $('bench').scrollIntoView({ block: 'nearest' });
         ($('recipes').querySelector('button:enabled') || $('close-bench')).focus({ preventScroll: true });
-        feedback.textContent = 'Choose an item, press Craft, then Take.';
+        feedback.textContent = 'Click Craft & equip once. Your equipment is ready to use in the arena.';
         break;
       case 'arena':
         if (hasWeapon()) startArena();
-        else feedback.textContent = 'Craft a weapon at the workbench and press Take.';
+        else feedback.textContent = 'Open the workbench and click Craft & equip on a weapon.';
         break;
     }
     updateLab();
@@ -194,7 +201,8 @@
   $('workshop-canvas').addEventListener('pointerdown', () => { $('bench').hidden = true; });
   updateLab();
   try {
-    workshop = window.createWorkshop($('workshop-canvas'), interactWithStation, showTarget);
+    workshop = window.createWorkshop($('workshop-canvas'), interactWithStation, showTarget,
+      message => { feedback.textContent = message; });
     workshop.start();
   } catch (error) {
     feedback.textContent = 'The workshop could not load. Open it in Chrome and check your internet connection and hardware acceleration.';

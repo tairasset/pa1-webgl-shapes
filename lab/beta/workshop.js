@@ -2,7 +2,7 @@
   'use strict';
 
   const EYE = 1.62;
-  const REACH = 3.1;
+  const REACH = 4.2;
   const KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
   const stations = [
     { id: 'supply', x: 0, z: 2, title: '01  SUPPLIES', tint: 0xdcab71, halfWidth: 0.95, halfDepth: 0.54 },
@@ -13,7 +13,7 @@
   ];
   const limit = (value, min, max) => Math.min(max, Math.max(min, value));
 
-  window.createWorkshop = function (canvas, onInteract, onTarget) {
+  window.createWorkshop = function (canvas, onInteract, onTarget, onHint) {
     const T = window.AFRAME?.THREE;
     if (!T) throw new Error('The 3D workshop library did not load.');
 
@@ -26,7 +26,12 @@
     const cube = new T.BoxGeometry(1, 1, 1);
     const surfaces = new Map();
     const direction = new T.Vector3();
-    const pointer = { id: null, x: 0, y: 0 };
+    const pointer = { id: null, x: 0, y: 0, travel: 0, button: 0 };
+    const raycaster = new T.Raycaster();
+    const pickPoint = new T.Vector2();
+    const pickTargets = [];
+    const pickMaterial = new T.MeshBasicMaterial({ visible: false });
+    const highlights = new Map();
     const keys = new Set();
     let x = 0, z = 4.45, yaw = 0, pitch = -0.04;
     let active = false, frame = 0, lastTime = 0, target = null;
@@ -74,8 +79,24 @@
 
     function stationModel(station) {
       const group = new T.Group();
+      group.userData.stationId = station.id;
       group.position.set(station.x, 0, station.z);
       scene.add(group);
+      // A generous click area includes gaps between the visible crates and tools.
+      const pickArea = new T.Mesh(cube, pickMaterial);
+      pickArea.position.y = 1.1;
+      pickArea.scale.set(station.halfWidth * 2.15, 2.1, station.halfDepth * 2.15);
+      group.add(pickArea);
+      pickTargets.push(pickArea);
+      const highlight = new T.Mesh(
+        new T.RingGeometry(1.35, 1.43, 48),
+        new T.MeshBasicMaterial({ color: 0xcbe18f, side: T.DoubleSide })
+      );
+      highlight.rotation.x = -Math.PI / 2;
+      highlight.position.y = 0.085;
+      highlight.visible = false;
+      group.add(highlight);
+      highlights.set(station.id, highlight);
       const color = station.tint;
       const steel = 0x334943;
       const trim = 0x596c58;
@@ -146,20 +167,24 @@
 
     function updateTarget() {
       const forwardX = Math.sin(yaw), forwardZ = -Math.cos(yaw);
-      let best = 0.77;
+      let best = -Infinity;
       let next = null;
       for (const station of stations) {
         const dx = station.x - x, dz = station.z - z;
         const range = Math.hypot(dx, dz);
         if (range > REACH || range < 0.15) continue;
         const alignment = (dx * forwardX + dz * forwardZ) / range;
-        if (alignment > best) {
-          best = alignment;
+        // Close stations remain usable without precise aiming.
+        if (alignment < 0.35 && range > 2) continue;
+        const score = alignment - range * 0.12;
+        if (score > best) {
+          best = score;
           next = station.id;
         }
       }
       if (target !== next) {
         target = next;
+        for (const [id, highlight] of highlights) highlight.visible = id === target;
         onTarget?.(target);
       }
     }
@@ -170,7 +195,32 @@
     }
 
     function interact() {
-      if (active && target) onInteract?.(target);
+      if (!active) return;
+      updateTarget();
+      if (target) onInteract?.(target);
+      else onHint?.('Walk closer to a station, then click it or press E.');
+    }
+
+    function clickStation(event) {
+      const bounds = canvas.getBoundingClientRect();
+      pickPoint.set((event.clientX - bounds.left) / bounds.width * 2 - 1,
+        1 - (event.clientY - bounds.top) / bounds.height * 2);
+      scene.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      raycaster.setFromCamera(pickPoint, camera);
+      for (const hit of raycaster.intersectObjects(pickTargets, false)) {
+        let group = hit.object;
+        while (group && !group.userData.stationId) group = group.parent;
+        if (!group) continue;
+        const station = stations.find(item => item.id === group.userData.stationId);
+        if (Math.hypot(station.x - x, station.z - z) > REACH) {
+          onHint?.('Move a little closer to ' + station.title.slice(4).toLowerCase() + ', then click again.');
+        } else {
+          onInteract?.(station.id);
+        }
+        return;
+      }
+      onHint?.('Click a station or use the highlighted station with E. Drag to look around.');
     }
 
     canvas.addEventListener('pointerdown', event => {
@@ -179,16 +229,25 @@
       pointer.id = event.pointerId;
       pointer.x = event.clientX;
       pointer.y = event.clientY;
+      pointer.travel = 0;
+      pointer.button = event.button;
       canvas.setPointerCapture?.(event.pointerId);
     });
     canvas.addEventListener('pointermove', event => {
       if (!active || pointer.id !== event.pointerId) return;
+      pointer.travel += Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y);
       yaw += (event.clientX - pointer.x) * 0.005;
       pitch = limit(pitch - (event.clientY - pointer.y) * 0.004, -0.65, 0.65);
       pointer.x = event.clientX;
       pointer.y = event.clientY;
     });
-    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    canvas.addEventListener('pointerup', event => {
+      if (pointer.id !== event.pointerId) return;
+      const click = pointer.travel <= 8 && pointer.button === 0;
+      pointer.id = null;
+      if (active && click) clickStation(event);
+    });
+    for (const name of ['pointercancel', 'lostpointercapture']) {
       canvas.addEventListener(name, event => { if (pointer.id === event.pointerId) pointer.id = null; });
     }
     canvas.addEventListener('contextmenu', event => { if (active) event.preventDefault(); });
@@ -249,6 +308,7 @@
       cancelAnimationFrame(frame);
       clearInput();
       target = null;
+      for (const highlight of highlights.values()) highlight.visible = false;
       onTarget?.(null);
     }
 

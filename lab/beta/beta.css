@@ -66,6 +66,7 @@ footer span { color: var(--copper); margin-inline: 5px; }
 .arena-head h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); }
 .arena-hud { min-height: 42px; padding: 10px 12px; border: 1px solid var(--line); background: var(--panel); color: var(--green); }
 canvas { display: block; width: 100%; height: auto; max-width: 100%; border: 1px solid var(--line); background: #131b14; cursor: crosshair; }
+#workshop-canvas { touch-action: none; }
 .arena-screen { position: relative; }
 .crosshair { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 14px; height: 14px; pointer-events: none; }
 .crosshair::before, .crosshair::after { content: ""; position: absolute; inset: 6px 0; background: #fff4d3; box-shadow: 0 0 3px #000; }
@@ -75,6 +76,11 @@ canvas { display: block; width: 100%; height: auto; max-width: 100%; border: 1px
 .workshop-hud { position: absolute; left: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
 .workshop-hud span { padding: 5px 9px; background: #131b14ed; border: 1px solid var(--line); font-size: .82rem; }
 .workshop-hud strong { color: var(--green); margin-left: 4px; }
+.workshop-interaction { position: absolute; bottom: 10px; left: 10px; right: 10px; padding: 10px 14px; background: #131b14ed; border: 1px solid var(--line); border-radius: 6px; }
+.workshop-action { display: flex; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.workshop-action p { margin: 0; font-weight: 650; }
+.workshop-action button { flex-shrink: 0; }
+#lab-feedback { margin: 6px 0 0; color: var(--green); font-size: .86rem; }
 .arena-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .research { margin-top: 18px; color: var(--muted); }
 .research summary { cursor: pointer; margin-bottom: 10px; }
@@ -84,6 +90,8 @@ kbd { display: inline-block; margin: 4px 2px 0 8px; padding: 2px 5px; background
   .recipes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
+  .workshop-action { flex-wrap: wrap; }
+  .workshop-interaction { padding: 7px 9px; }
   .top, main, footer { width: calc(100% - 26px); }
   .intro, .stations { grid-template-columns: 1fr; }
   .brand { font-size: .72rem; }

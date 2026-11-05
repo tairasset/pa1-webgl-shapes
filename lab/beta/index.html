@@ -6,12 +6,12 @@
   <meta name="description" content="Build equipment in the workshop and test it against robots in the arena.">
   <meta name="theme-color" content="#131915">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="beta.css">
+  <link rel="stylesheet" href="beta.css?v=easy-pickup-1">
   <script src="https://aframe.io/releases/1.8.0/aframe.min.js" defer></script>
-  <script src="workshop.js" defer></script>
+  <script src="workshop.js?v=easy-pickup-1" defer></script>
   <script src="arena-view.js" defer></script>
   <script src="arena.js" defer></script>
-  <script src="lab.js" defer></script>
+  <script src="lab.js?v=easy-pickup-1" defer></script>
   <title>Bayeshov Lab · Beta</title>
 </head>
 <body>
@@ -22,7 +22,7 @@
   </svg>
   <header class="top">
     <a class="brand" href="../index.html" aria-label="Back to mode menu"><span class="brand-mark" aria-hidden="true">←</span> MODE MENU</a>
-    <span class="badge">GAME BETA · 0.2</span>
+    <span class="badge">GAME BETA · 0.3</span>
   </header>
   <main>
     <nav class="modes" aria-label="Game modes">
@@ -37,21 +37,24 @@
           <p id="lab-objective">Step 1 of 4 · Pick up raw materials from the supply station.</p>
         </div>
       </div>
-      <p class="keys"><kbd>WASD</kbd> move <kbd>Mouse drag</kbd> look <kbd>E</kbd> use a station. Arrow keys also turn the camera.</p>
+      <p class="keys"><kbd>WASD</kbd> move <kbd>Mouse drag</kbd> look <kbd>Click a station</kbd> collect / use. You can also press <kbd>E</kbd> or the action button.</p>
       <div class="arena-screen">
         <canvas id="workshop-canvas" width="960" height="600" tabindex="0" aria-label="3D workshop"></canvas>
         <span class="crosshair" aria-hidden="true"></span>
         <div class="workshop-hud" aria-label="Inventory">
+          <span>Raw batches <strong id="stock-raw">0</strong></span>
           <span>Powder <strong id="stock-copper">0</strong></span>
           <span>Power cells <strong id="stock-charge">0</strong></span>
           <span>Gear <strong id="stock-gear">0 / 4</strong></span>
         </div>
+        <div class="workshop-interaction">
+          <div class="workshop-action">
+            <p id="station-prompt">Walk closer to a station or click it.</p>
+            <button id="station-action" class="primary" type="button" disabled>Use station</button>
+          </div>
+          <p id="lab-feedback" role="status">Click the supply crates in front of you to collect materials.</p>
+        </div>
       </div>
-      <div class="launch">
-        <p id="station-prompt">Walk up to a station and aim at it.</p>
-        <button id="station-action" type="button" disabled>Use station</button>
-      </div>
-      <p id="lab-feedback" role="status">Aim at the supply station and press E to get started.</p>
       <section id="bench" aria-labelledby="bench-title" hidden>
         <div class="launch">
           <h2 id="bench-title">Workbench</h2>
