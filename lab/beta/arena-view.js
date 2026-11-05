@@ -5,20 +5,23 @@
   const EYE_HEIGHT = 44 * SCALE;
   const THROW_DURATION = 0.48;
 
-  window.createArenaView = function (canvas, { width, height }) {
+  window.createArenaView = function (canvas, { width, height, environment = 'indoor' }) {
     const T = window.AFRAME?.THREE;
     if (!T) throw new Error('The 3D library did not load. Check your internet connection and reload.');
 
     const renderer = new T.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.setSize(width, height, false);
     renderer.setClearColor(0x171e1b);
 
+    const desert = environment === 'desert';
     const scene = new T.Scene();
-    scene.fog = new T.Fog(0x171e1b, 19, 44);
-    const camera = new T.PerspectiveCamera(67, width / height, 0.07, 75);
+    scene.fog = new T.Fog(desert ? 0xe8ad78 : 0x171e1b, desert ? 20 : 19, desert ? 150 : 44);
+    const camera = new T.PerspectiveCamera(67, width / height, 0.07, desert ? 380 : 75);
     scene.add(camera);
 
-    const ambient = new T.HemisphereLight(0xd5e6ec, 0x555046, 2);
+    const ambient = new T.HemisphereLight(desert ? 0xffe2bc : 0xd5e6ec, desert ? 0x876650 : 0x555046, desert ? 1.45 : 2);
     const key = new T.DirectionalLight(0xffe5c7, 2.1);
     key.position.set(-5, 12, -8);
     const fill = new T.DirectionalLight(0x8ab0c2, 0.9);
@@ -59,6 +62,28 @@
     const midX = worldWidth / 2;
     const midZ = worldDepth / 2;
     const hallHeight = 5.6;
+    if (desert) {
+      if (typeof window.createDesertLandscape !== 'function') throw new Error('The desert landscape did not load. Reload the page.');
+      const landscape = window.createDesertLandscape();
+      landscape.position.set(midX, 0, midZ);
+      scene.add(landscape);
+      // Boundary rails match the playable area's edges while leaving the mountains visible.
+      const fence = standard(0x66564a, 0.88);
+      for (const edgeZ of [0.18, worldDepth - 0.18]) {
+        part(scene, fence, midX, 0.56, edgeZ, worldWidth, 0.075, 0.08);
+        for (let x = 0.4; x < worldWidth; x += 3.8) {
+          part(scene, fence, x, 0.56, edgeZ, 0.15, 1.12, 0.15);
+          part(scene, amber, x, 1.05, edgeZ, 0.18, 0.08, 0.18);
+        }
+      }
+      for (const edgeX of [0.18, worldWidth - 0.18]) {
+        part(scene, fence, edgeX, 0.56, midZ, 0.08, 0.075, worldDepth);
+        for (let z = 0.4; z < worldDepth; z += 3.8) {
+          part(scene, fence, edgeX, 0.56, z, 0.15, 1.12, 0.15);
+          part(scene, amber, edgeX, 1.05, z, 0.18, 0.08, 0.18);
+        }
+      }
+    } else {
     part(scene, floorMat, midX, -0.12, midZ, worldWidth, 0.24, worldDepth);
     part(scene, wall, midX, hallHeight / 2, 0, worldWidth, hallHeight, 0.30);
     part(scene, wall, midX, hallHeight / 2, worldDepth, worldWidth, hallHeight, 0.30);
@@ -93,6 +118,7 @@
     }
     for (const x of [1.1, worldWidth - 1.1]) part(scene, amber, x, 0.025, midZ, 0.07, 0.02, worldDepth - 2.2);
     for (const z of [1.1, worldDepth - 1.1]) part(scene, amber, midX, 0.025, z, worldWidth - 2.2, 0.02, 0.07);
+    }
     const startRing = new T.Mesh(unitRing, amber);
     startRing.position.set(midX, 0.025, midZ);
     startRing.scale.set(2.1, 1, 2.1);
@@ -167,12 +193,45 @@
       }
     }
 
+    const rifleColor = standard(0x587b73, 0.48);
+    const marksmanColor = standard(0x807b59, 0.54);
+    function weaponModel(id) {
+      const model = new T.Group();
+      const wide = id === 'scatter';
+      const long = id === 'rifle' || id === 'marksman';
+      const bodyMat = wide ? heavyCopper : id === 'rifle' ? rifleColor : id === 'marksman' ? marksmanColor : copper;
+      part(model, bodyMat, 0, 0, 0.01, wide ? .33 : .25, .23, long ? .78 : .58);
+      part(model, steel, 0, -.17, .12, .14, .26, .16);
+      part(model, lightSteel, 0, .115, -.1, .20, .065, long ? .7 : .42);
+      if (wide) {
+        // The shotgun has two separate wide barrels and a broad foregrip.
+        for (const x of [-.105, .105]) part(model, lightSteel, x, .015, -.49, .13, .14, .52);
+        part(model, steel, 0, -.055, -.31, .34, .13, .25);
+      } else {
+        part(model, id === 'blaster' ? amber : steel, 0, .015, long ? -.63 : -.42,
+          id === 'blaster' ? .16 : .10, .12, id === 'marksman' ? .84 : long ? .58 : .32);
+      }
+      if (long) {
+        part(model, bodyMat, 0, -.025, .49, .17, .25, .3);
+        part(model, steel, 0, -.19, -.10, .12, .26, .19);
+      }
+      if (id === 'marksman') {
+        part(model, steel, 0, .26, -.11, .13, .15, .40);
+        part(model, icy, 0, .26, -.32, .105, .105, .025);
+      } else if (id === 'rifle') {
+        part(model, selectedLight, .133, .025, -.03, .025, .055, .35);
+        part(model, steel, 0, .21, -.04, .10, .13, .12);
+      } else part(model, amber, .135, .02, .02, .026, .04, .19);
+      return model;
+    }
+
     const gun = new T.Group();
     camera.add(gun);
-    part(gun, steel, 0, 0, 0.01, 0.28, 0.23, 0.49);
-    part(gun, lightSteel, 0, 0.105, -0.08, 0.19, 0.05, 0.44);
-    const barrel = part(gun, copper, 0, 0.015, -0.32, 0.17, 0.14, 0.38);
-    part(gun, amber, 0.10, 0.03, -0.01, 0.07, 0.04, 0.19);
+    const heldModels = new Map(['blaster', 'scatter', 'rifle', 'marksman'].map(id => {
+      const model = weaponModel(id);
+      gun.add(model);
+      return [id, model];
+    }));
     const flash = new T.Mesh(sphere, warmLight);
     flash.position.set(0, 0.02, -0.55);
     gun.add(flash);
@@ -186,13 +245,13 @@
       part(group, steel, 0, 0.55, 0, 0.88, 1.1, 0.88);
       part(group, lightSteel, 0, 1.15, 0, 1.0, 0.1, 1.0);
       const band = part(group, amber, 0, 1.08, 0, 0.96, 0.065, 0.96);
-      const model = new T.Group();
+      const model = weaponModel(choice.id);
       group.add(model);
-      const wide = choice.id === 'scatter';
-      part(model, wide ? heavyCopper : copper, 0, 0, 0.01, 0.27, 0.23, 0.60);
-      part(model, steel, 0, -0.15, 0.11, 0.16, 0.22, 0.17);
-      part(model, lightSteel, 0, 0.09, -0.13, 0.24, 0.12, 0.52);
-      part(model, wide ? lightSteel : amber, 0, 0.014, -0.44, wide ? 0.36 : 0.15, 0.14, 0.33);
+      const pickVolume = new T.Mesh(unitBox, new T.MeshBasicMaterial({ visible: false }));
+      pickVolume.position.y = 1.15;
+      pickVolume.scale.set(1.35, 2.3, 1.35);
+      group.add(pickVolume);
+      group.userData.weaponId = choice.id;
       const labelCanvas = document.createElement('canvas');
       labelCanvas.width = 320;
       labelCanvas.height = 72;
@@ -202,10 +261,10 @@
       ink.fillStyle = '#e7c886';
       ink.fillRect(0, 68, 320, 4);
       ink.fillStyle = '#fff4db';
-      ink.font = '600 36px system-ui, sans-serif';
+      ink.font = '600 31px system-ui, sans-serif';
       ink.textAlign = 'center';
       ink.textBaseline = 'middle';
-      ink.fillText(`${wide ? '2' : '1'} · ${choice.label}`, 160, 36);
+      ink.fillText(`${choice.key || (choice.id === 'scatter' ? '2' : '1')} · ${choice.label}`, 160, 36, 300);
       const labelTexture = new T.CanvasTexture(labelCanvas);
       labelTexture.colorSpace = T.SRGBColorSpace;
       const label = new T.Sprite(new T.SpriteMaterial({ map: labelTexture, toneMapped: false }));
@@ -222,7 +281,7 @@
         startRing.scale.set(2.1, 1, 2.1);
         return;
       }
-      startRing.scale.set(2.92, 1, 2.92);
+      startRing.scale.set(desert ? 4 : 2.92, 1, desert ? 4 : 2.92);
       for (const choice of state.weaponChoices) {
         if (!weaponDisplays.has(choice.id)) weaponDisplays.set(choice.id, weaponDisplay(choice));
         const display = weaponDisplays.get(choice.id);
@@ -235,6 +294,14 @@
     }
 
     function draw(state, yaw, pitch, time) {
+      const renderWidth = Math.max(1, Math.round(canvas.clientWidth || width));
+      const renderHeight = Math.max(1, Math.round(canvas.clientHeight || height));
+      const actualSize = renderer.getSize(renderSize);
+      if (actualSize.x !== renderWidth || actualSize.y !== renderHeight) {
+        renderer.setSize(renderWidth, renderHeight, false);
+        camera.aspect = renderWidth / renderHeight;
+        camera.updateProjectionMatrix();
+      }
       const { player } = state;
       const px = player.x * SCALE;
       const pz = player.y * SCALE;
@@ -292,18 +359,39 @@
         group.rotation.y = -Math.atan2(shot.vy, shot.vx);
       });
 
-      const short = state.weapon === 'scatter';
       gun.visible = state.phase !== 'briefing';
-      const recoil = Math.max(0, state.shotCooldown - (short ? 0.43 : 0.08));
+      for (const [id, model] of heldModels) model.visible = id === state.weapon;
+      const delays = {blaster: .18, scatter: .55, rifle: .10, marksman: .95};
+      const delay = delays[state.weapon] || .18;
+      const recoil = Math.max(0, state.shotCooldown / delay) * .11;
       const bob = moving ? Math.sin(time * 0.015) * 0.024 : 0;
       gun.position.set(0.41 + bob, -0.37 - Math.abs(bob), -0.85 + recoil * 0.9);
       gun.rotation.x = recoil * 0.7;
-      barrel.scale.x = short ? 0.27 : 0.17;
-      flash.visible = recoil > 0.074;
-      flash.scale.setScalar(recoil * 1.4);
+      flash.position.z = state.weapon === 'marksman' ? -1.05 : state.weapon === 'rifle' ? -.94 : -.77;
+      flash.visible = state.shotCooldown > delay - .045;
+      flash.scale.setScalar(Math.min(.19, recoil * 1.8));
       renderer.render(scene, camera);
     }
 
-    return { draw };
+    const renderSize = new T.Vector2();
+    const picker = new T.Raycaster();
+    const pointer = new T.Vector2();
+    function pickWeapon(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      pointer.set((clientX - rect.left) / rect.width * 2 - 1, 1 - (clientY - rect.top) / rect.height * 2);
+      scene.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      picker.setFromCamera(pointer, camera);
+      const visible = [...weaponDisplays.values()].filter(display => display.group.visible).map(display => display.group);
+      for (const hit of picker.intersectObjects(visible, true)) {
+        let object = hit.object;
+        while (object && !object.userData.weaponId) object = object.parent;
+        if (object?.userData.weaponId) return object.userData.weaponId;
+      }
+      return null;
+    }
+
+    return { draw, pickWeapon };
   };
 })();

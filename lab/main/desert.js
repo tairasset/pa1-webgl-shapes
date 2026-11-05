@@ -141,8 +141,7 @@
     return mesh;
   }
 
-  AFRAME.registerComponent('desert-landscape', {
-    init: function () {
+  window.createDesertLandscape = function () {
       const landscape = new T.Group();
       const backdrop = sky();
       backdrop.renderOrder = -1;
@@ -151,7 +150,12 @@
         ridge(68, 21, 3.28, '#7c4e4c', '#c88f6d'),
         ridge(42, 12, 2.16, '#7b4834', '#ba825d'),
         rocks());
-      this.el.setObject3D('landscape', landscape);
+      return landscape;
+  };
+
+  AFRAME.registerComponent('desert-landscape', {
+    init: function () {
+      this.el.setObject3D('landscape', window.createDesertLandscape());
     },
     remove: function () {
       const landscape = this.el.getObject3D('landscape');

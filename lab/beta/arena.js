@@ -9,20 +9,22 @@
   const SPAWN_RADIUS_X = WIDTH / 2 - 36;
   const SPAWN_RADIUS_Y = HEIGHT / 2 - 36;
   const weapons = {
-    blaster: { label: 'Blaster', delay: 0.18, damage: 22, speed: 770, life: 0.85, angles: [0], color: '#ffcf6f' },
-    scatter: { label: 'Shotgun', delay: 0.55, damage: 18, speed: 630, life: 0.32, angles: [-0.24, -0.12, 0, 0.12, 0.24], color: '#fb9d75' }
+    blaster: { label: 'Blaster', key: '1', delay: 0.18, damage: 22, speed: 770, life: 0.85, angles: [0], color: '#ffcf6f' },
+    scatter: { label: 'Shotgun', key: '2', delay: 0.55, damage: 18, speed: 630, life: 0.32, angles: [-0.24, -0.12, 0, 0.12, 0.24], color: '#fb9d75' },
+    rifle: { label: 'Pulse rifle', key: '5', delay: 0.10, damage: 13, speed: 1000, life: 0.9, angles: [0], color: '#a7f1cd' },
+    marksman: { label: 'Railgun', key: '6', delay: 0.95, damage: 110, speed: 1800, life: 0.8, angles: [0], color: '#b2d9ff' }
   };
   const gadgets = {
     cryo: { label: 'Cryo capsule', radius: 113, color: '#83def5' },
     pulse: { label: 'Pulse grenade', radius: 91, color: '#ffd785' }
   };
   const movement = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']);
-  const action = new Set(['Digit1', 'Digit2', 'Digit3', 'Digit4', 'KeyE', 'KeyG', 'KeyQ', 'Space']);
+  const action = new Set(['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'KeyE', 'KeyG', 'KeyQ', 'Space']);
   const limit = (value, min, max) => Math.min(max, Math.max(min, value));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
-  window.createArena = function (canvas, hud, onEnd, onBegin) {
-    const view = window.createArenaView(canvas, { width: WIDTH, height: HEIGHT });
+  window.createArena = function (canvas, hud, onEnd, onBegin, options = {}) {
+    const view = window.createArenaView(canvas, { width: WIDTH, height: HEIGHT, environment: options.environment });
     const held = new Set();
     let firing = false;
     let pointer = null;
@@ -61,8 +63,13 @@
       canvas.focus({ preventScroll: true });
       if (document.pointerLockElement === canvas) {
         if (event.button === 0) {
-          firing = true;
-          fireIfReady();
+          if (state.phase === 'briefing') {
+            updateAimedWeapon();
+            if (state.aimedWeapon) equip(state.aimedWeapon);
+          } else {
+            firing = true;
+            fireIfReady();
+          }
         }
         return;
       }
@@ -90,9 +97,12 @@
     window.addEventListener('pointerup', event => {
       if (event.button === 0) firing = false;
       if (pointer?.id !== event.pointerId || pointer.button !== event.button) return;
-      const shouldFire = !pointer.moved && pointer.button === 0 && event.target === canvas;
+      const clicked = !pointer.moved && pointer.button === 0 && event.target === canvas;
       pointer = null;
-      if (shouldFire) fireIfReady();
+      if (clicked && state.phase === 'briefing') {
+        const id = view.pickWeapon?.(event.clientX, event.clientY);
+        if (id) equip(id);
+      } else if (clicked) fireIfReady();
     });
     window.addEventListener('pointercancel', clearInput);
     window.addEventListener('blur', clearInput);
@@ -110,9 +120,9 @@
         return;
       }
       if (event.repeat) return;
-      if (event.code === 'Digit1' && state.loadout.includes('blaster')) state.weapon = 'blaster';
-      if (event.code === 'Digit2' && state.loadout.includes('scatter')) state.weapon = 'scatter';
-      if (event.code === 'KeyE' && state.phase === 'briefing' && state.aimedWeapon) state.weapon = state.aimedWeapon;
+      const weapon = Object.keys(weapons).find(id => event.code === 'Digit' + weapons[id].key);
+      if (weapon) equip(weapon);
+      if (event.code === 'KeyE' && state.phase === 'briefing' && state.aimedWeapon) equip(state.aimedWeapon);
       if (event.code === 'Digit3' && state.loadout.includes('cryo')) state.gadget = 'cryo';
       if (event.code === 'Digit4' && state.loadout.includes('pulse')) state.gadget = 'pulse';
       if (event.code === 'KeyQ' && state.gadgetOrder.length > 1) {
@@ -149,8 +159,10 @@
       }
       const gadgetOrder = Object.keys(gadgets).filter(id => chosen.includes(id));
       const weaponChoices = availableWeapons.map((id, index) => {
-        const angle = (index - (availableWeapons.length - 1) / 2) * 1.14;
-        return { id, label: weapons[id].label, x: WIDTH / 2 + 73 * Math.cos(angle), y: HEIGHT / 2 + 73 * Math.sin(angle) };
+        const circle = options.environment === 'desert';
+        const angle = circle ? index * Math.PI * 2 / availableWeapons.length : (index - (availableWeapons.length - 1) / 2) * 1.14;
+        const radius = circle ? 100 : 73;
+        return { id, key: weapons[id].key, label: weapons[id].label, x: WIDTH / 2 + radius * Math.cos(angle), y: HEIGHT / 2 + radius * Math.sin(angle) };
       });
       state = {
         phase: 'briefing', weaponChoices, aimedWeapon: null,
@@ -175,6 +187,21 @@
       spawnWave(firstSpawn);
       onBegin?.();
       canvas.focus({ preventScroll: true });
+      return true;
+    }
+
+    function equip(id) {
+      if (!active || !weapons[id] || !state.loadout.includes(id)) return false;
+      state.weapon = id;
+      // Switching weapons does not bypass the previous shot's cooldown.
+      draw();
+      return true;
+    }
+
+    function chooseGadget(id) {
+      if (!active || !gadgets[id] || !state.loadout.includes(id)) return false;
+      state.gadget = id;
+      draw();
       return true;
     }
 
@@ -234,6 +261,7 @@
     }
 
     function throwGadget() {
+      if (!active || state.phase !== 'combat') return;
       const id = state.gadget;
       if (!id || !state.charges[id] || state.throwCooldown > 0) return;
       const player = state.player;
@@ -268,16 +296,28 @@
 
     function advanceShots(dt) {
       state.shots = state.shots.filter(shot => {
-        shot.x += shot.vx * dt;
-        shot.y += shot.vy * dt;
-        shot.height += shot.rise * dt;
-        shot.life -= dt;
-        if (shot.life <= 0 || shot.height <= 0 || shot.x < 0 || shot.x > WIDTH || shot.y < 0 || shot.y > HEIGHT) return false;
-        const hit = state.robots.find(robot =>
-          robot.health > 0 && shot.height < robot.radius * 3.2 && distance(shot, robot) < robot.radius + 3);
-        if (!hit) return true;
-        hit.health -= shot.damage;
-        return false;
+        const step = Math.min(dt, shot.life);
+        const fromX = shot.x, fromY = shot.y, fromHeight = shot.height;
+        const dx = shot.vx * step, dy = shot.vy * step;
+        shot.x += dx;
+        shot.y += dy;
+        shot.height += shot.rise * step;
+        shot.life -= step;
+        // Sweep the travelled segment so fast railgun shots cannot skip a robot.
+        let hit = null, first = Infinity;
+        const lengthSquared = dx * dx + dy * dy;
+        for (const robot of state.robots) {
+          if (robot.health <= 0) continue;
+          const t = lengthSquared ? limit(((robot.x - fromX) * dx + (robot.y - fromY) * dy) / lengthSquared, 0, 1) : 0;
+          const gap = Math.hypot(fromX + dx * t - robot.x, fromY + dy * t - robot.y);
+          const height = fromHeight + shot.rise * step * t;
+          if (gap < robot.radius + 3 && height >= 0 && height < robot.radius * 3.2 && t < first) {
+            hit = robot;
+            first = t;
+          }
+        }
+        if (hit) { hit.health -= shot.damage; return false; }
+        return shot.life > 0 && shot.height > 0 && shot.x >= 0 && shot.x <= WIDTH && shot.y >= 0 && shot.y <= HEIGHT;
       });
     }
 
@@ -354,16 +394,18 @@
 
     function draw(time = performance.now()) {
       view.draw(state, yaw, pitch, time);
+      options.onStatus?.({ phase: state.phase, weapon: state.weapon, gadget: state.gadget,
+        kills: state.kills, health: state.player.health, wave: state.wave });
       if (state.phase === 'briefing') {
         const aimed = state.aimedWeapon ? ` · E: equip ${weapons[state.aimedWeapon].label}` : '';
-        const status = `Briefing · Equipped: ${weapons[state.weapon].label}${aimed} · 1/2: weapons · Space: start round`;
+        const status = `Ready · Equipped: ${weapons[state.weapon].label}${aimed} · Space: start battle`;
         if (hud.textContent !== status) hud.textContent = status;
         return;
       }
       const player = state.player;
       const gadget = state.gadget ? `${gadgets[state.gadget].label} ×${state.charges[state.gadget]}` : 'No gadgets';
       const wave = state.nextWave > 0 ? 'Next wave…' : `Wave ${state.wave}/${WAVES} · Robots ${state.robots.length}`;
-      const status = `Health ${player.health}% · ${wave} · ${weapons[state.weapon].label} · ${gadget}`;
+      const status = `Health ${player.health}% · ${wave} · ${weapons[state.weapon].label} · ${gadget} · Disabled ${state.kills}`;
       if (hud.textContent !== status) hud.textContent = status;
     }
 
@@ -376,6 +418,6 @@
       if (active) frame = requestAnimationFrame(loop);
     }
 
-    return { start, stop, lockPointer, beginRound };
+    return { start, stop, lockPointer, beginRound, equip, chooseGadget };
   };
 })();
