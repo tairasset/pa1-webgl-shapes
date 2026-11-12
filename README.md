@@ -1,32 +1,28 @@
-# PA1 - 3D Shapes in WebGL
+# 3D Shapes in WebGL
 
-Tair Asset, AIB-2401
+A browser graphics coursework project by Tair Asset. It renders a cube and a square frustum with WebGL, using vertex colors to create gradients on selected faces.
 
-Student ID: 242458
+## Preview locally
 
-The scene has a cube on the left and a square frustum on the right. My ID ends in 58, so the back vertices move 0.15 left and 0.15 up. That is why the top and left sides are visible. Each solid has one face with a colour gradient.
+Run this command from the repository root and open [the local preview](http://localhost:8765/) in a browser with WebGL support.
 
-## Run
-
-Start a local server in this folder:
-
-```text
+```sh
 python -m http.server 8765
 ```
 
-Then open `http://localhost:8765/`. If you use VS Code, Live Server works too.
+The page uses plain HTML, JavaScript, and GLSL. There are no npm dependencies.
 
-## Keys
+## Controls
 
 | Key | Action |
 | --- | --- |
-| 1 | TRIANGLES — filled faces (default) |
-| 2 | LINE_LOOP — connected lines |
-| 3 | LINES — separate line segments |
-| 4 | LINE_STRIP — connected lines without closing the loop |
-| 5 | POINTS — show the vertices |
-| 6 | TRIANGLE_STRIP — triangles joined in a strip |
-| D | Turn the depth test on or off |
-| S | Draw the frustum before the cube, or the cube before the frustum |
+| 1 | Triangles, the default filled view |
+| 2 | Line loop |
+| 3 | Independent line segments |
+| 4 | Line strip |
+| 5 | Points at vertices |
+| 6 | Triangle strip |
+| D | Toggle depth testing |
+| S | Switch which shape is drawn first |
 
-The small label in the top-left corner shows what is currently selected.
+The on-screen label shows the active drawing mode, depth test, and draw order. Toggle depth testing and switch the draw order to see how overlapping surfaces change.
